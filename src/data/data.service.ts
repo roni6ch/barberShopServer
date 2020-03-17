@@ -14,13 +14,11 @@ export class DataService {
   }
   async setHour(data){
      let res = await this.dm.findOne({ dayTimestamp: +data.date }).exec();
-     console.log('res: ',res);
-     
      if (res) {
-       let resArr = res.hours.map((v,i)=>{
+       let resArr = res.hours.map(async (v,i)=>{
             if(v.hour === data.hour){
-                v.available = false;
-                res.save();
+              res.hours[i].available = false;
+              await res.save();
                 console.log("found hour in data and updated!!!");
             }
         });
