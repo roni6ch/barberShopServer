@@ -7,20 +7,39 @@ import { Model } from 'mongoose';
 export class DataService {
   private data: Data[] = [];
 
-  constructor(@InjectModel('Data') private readonly dataModel: Model<Data>) {}
+  constructor(@InjectModel('Data') private readonly dm: Model<Data>) {}
 
   async getData() {
-      console.log('getData');
-    const data = await this.dataModel.find().exec();
-    console.log('data',data);
-    return data;
+    return await this.dm.find();
+  }
+  async setHour(data){
+     let res = await this.dm.findOne({ dayTimestamp: +data.date }).exec();
+     console.log('res: ',res);
+     
+     if (res) {
+       let resArr = res.hours.map((v,i)=>{
+            if(v.hour === data.hour){
+                v.available = false;
+                res.save();
+                console.log("found hour in data and updated!!!");
+            }
+        });
+        if (resArr.length > 0){
+            return true;
+        }
+      }
+      console.log("didnt find hour in data");
+      return false;
   }
 
-  async setAvailability(dayTimestamp: string, available: boolean): Promise<boolean> {
-    const dayTimestampDB = await this.dataModel.findOne({ dayTimestamp }).exec();
+  async setAvailability(
+    dayTimestamp: string,
+    available: boolean,
+  ): Promise<boolean> {
+    const dayTimestampDB = await this.dm
+      .findOne({ dayTimestamp })
+      .exec();
     console.log(dayTimestampDB);
     return dayTimestampDB;
   }
-  
- 
 }

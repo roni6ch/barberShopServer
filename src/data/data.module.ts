@@ -11,6 +11,6 @@ import { DataSchema } from './data.model';
     MongooseModule.forFeature([{name:'Data',schema:DataSchema}])
  ],
   controllers: [DataController],
-  providers: [DataService],
+  providers: [DataService]
 })
 export class DataModule {}

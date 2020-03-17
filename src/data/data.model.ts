@@ -1,12 +1,12 @@
 import * as mongoose from 'mongoose';
 
 export const DataSchema = new mongoose.Schema({
-    dayTimestamp: String,
-    available: Boolean,
-    hours: Array
-})
+    dayTimestamp: { type: String, required: true },
+    available: { type: Boolean, required: true },
+    hours: { type: Array, required: true }
+}, { collection: 'data' })
 
-export interface Data {
+export interface Data extends mongoose.Document {
   dayTimestamp: string;
   available: boolean;
   hours: Hours[];
