@@ -13,5 +13,4 @@ export interface Data extends mongoose.Document {
 }
 export interface Hours {
   hour: string;
-  available: boolean;
 }

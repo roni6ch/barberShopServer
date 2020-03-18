@@ -1,0 +1,33 @@
+{
+	"parallax": {
+		"scrollSensitivitySetting": 30,
+		"slideDurationSetting": 600
+  },
+  "calendar":{
+    "daysOff":["Friday","Saturday"],
+    "days":14,
+    "hours":[9,21]
+  },
+	"gallery":[
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(1).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(2).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(3).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(4).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(5).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(6).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(7).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(8).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(9).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(10).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(11).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(12).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(13).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(14).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(15).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(16).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(17).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(18).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(19).jpg",
+		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(20).jpg"
+	]
+}

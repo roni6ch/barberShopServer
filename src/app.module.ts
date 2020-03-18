@@ -1,8 +1,13 @@
+import { SettingsService } from './settings/settings.service';
 import { Module } from '@nestjs/common';
 import { DataModule } from './data/data.module';
 import { constants } from './constants';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CustomersModule } from './customers/customers.module';
+import { SettingsController } from './settings/settings.controller';
+import { AdminController } from './admin/admin.controller';
+import { AdminService } from './admin/admin.service';
+import { AdminModule } from './admin/admin.module';
 
 
 
@@ -10,9 +15,10 @@ import { CustomersModule } from './customers/customers.module';
   imports: [
     DataModule,
     CustomersModule,
-    MongooseModule.forRoot(`mongodb+srv://${constants.mdbUser}:${constants.mdbPass}@cluster0-rmhe5.gcp.mongodb.net/barber?retryWrites=true&w=majority`, { useNewUrlParser: true,useUnifiedTopology:true})
+    AdminModule,
+    MongooseModule.forRoot(`mongodb+srv://${constants.mdbUser}:${constants.mdbPass}@cluster0-rmhe5.gcp.mongodb.net/barber?retryWrites=true&w=majority`, { useNewUrlParser: true,useUnifiedTopology:true,useFindAndModify: false})
   ],
-  controllers: [],
-  providers: [],
+  controllers: [SettingsController],
+  providers: [SettingsService],
 })
 export class AppModule {}

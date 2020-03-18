@@ -7,6 +7,7 @@ export const CustomerSchema = new mongoose.Schema({
     haircut: { type: String, required: true },
     gender: { type: String, required: true },
     date: { type: String, required: true },
+    dateStr: { type: String, required: true },
     hour: { type: String, required: true },
     other: { type: String }
 }, { collection: 'customers' })
@@ -18,6 +19,7 @@ export interface Customer extends mongoose.Document {
   haircut: string;
   gender: string;
   date: string;
+  dateStr: string,
   hour: string;
   other: string;
 }
