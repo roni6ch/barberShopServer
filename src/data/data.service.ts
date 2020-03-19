@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectID } from 'mongodb';
 
+import * as moment from 'moment';
 import * as SETTINGS from '../settings/settings.json';
 import { Customer } from 'src/customers/customer.model';
 
@@ -18,7 +19,19 @@ export class DataService {
   }
 
   async getData() {
-    return await this.dm.find();
+    let calendar = [];
+    var weekStart = moment()
+      .clone()
+      .startOf('week');
+    for (let i = 0; i < SETTINGS.calendar.days*2; i++) {
+      let date = +moment(weekStart).add(i, 'days');
+      calendar.push(+new Date(date));
+    }
+    return await this.dm
+      .find()
+      .where('dayTimestamp')
+      .in(calendar)
+      .exec();
   }
 
   async deleteHour(data: Customer) {
@@ -32,11 +45,13 @@ export class DataService {
       });
       res.hours = resHours;
       console.log(res);
-      const result = await this.dm.updateOne({_id: res._id},{hours:resHours}).exec();
+      const result = await this.dm
+        .updateOne({ _id: res._id }, { hours: resHours })
+        .exec();
       if (result.n === 0) {
         console.log('not updated!');
-      return false;
-      }else {
+        return false;
+      } else {
         console.log('updated!!!');
         return true;
       }
@@ -47,8 +62,9 @@ export class DataService {
   }
 
   async setHour(data) {
-    let res = await this.dm.findOne({ dayTimestamp: +data.date });
+    let res = await this.dm.findOne({ dayTimestamp: +data.date }).exec();
     if (res) {
+      console.log('res found!');
       let resHours = res.hours.map((v, i) => {
         if (v.hour === data.hour) {
           v.available = false;
@@ -56,22 +72,26 @@ export class DataService {
         return v;
       });
       if (resHours.length > 0) {
-        const result = await this.dm.updateOne({_id: res._id},{hours:resHours}).exec();
+        console.log('res length!');
+        const result = await this.dm
+          .updateOne({ _id: res._id }, { hours: resHours })
+          .exec();
         if (result.n === 0) {
           console.log('not updated!');
-        return false;
-        }else {
+          return false;
+        } else {
           console.log('updated!!!');
           return true;
         }
-    } else {
-      console.log('new day -> create one');
-      this.addCalendarDay(data);
+      } else {
+        console.log('no res', res);
+      }
+      return false;
     }
-    return false;
-  }
+    this.addCalendarDay(data);
   }
   async addCalendarDay(data) {
+    console.log('new day -> create one');
     let hours = [];
     for (let h = SETTINGS.calendar.hours[0]; h < SETTINGS.calendar.hours[1]; ) {
       hours.push({
@@ -90,6 +110,7 @@ export class DataService {
       hours,
     });
     const result = await newCalendarDay.save();
+    console.log('saved!');
     return result;
   }
 }
