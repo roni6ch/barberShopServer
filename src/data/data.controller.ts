@@ -9,12 +9,5 @@ export class DataController {
   getData(): any{
     return this.dataService.getData(); 
   }
-  /*
-  @Post()
-  async addData(
-      @Body('dayTimestamp') dayTimestamp: string,
-      @Body('available') available: boolean,
-  ): Promise<boolean>{
-    return await this.dataService.setAvailability(dayTimestamp,available); 
-  }*/
+  
 }
