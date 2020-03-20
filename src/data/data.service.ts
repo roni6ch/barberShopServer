@@ -23,7 +23,7 @@ export class DataService {
     var weekStart = moment()
       .clone()
       .startOf('week');
-    for (let i = 0; i < SETTINGS.calendar.days*2; i++) {
+    for (let i = 0; i < SETTINGS.calendar.days * 2; i++) {
       let date = +moment(weekStart).add(i, 'days');
       calendar.push(+new Date(date));
     }
