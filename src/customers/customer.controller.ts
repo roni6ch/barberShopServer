@@ -12,8 +12,8 @@ export class CustomerController {
     return await this.cs.deleteAllDocuments();
   }
   @Get('getMyTreatments')
-  async getMyTreatments(@Query('_id') _id: string): Promise<boolean> {
-    return await this.cs.getMyTreatments(_id);
+  async getMyTreatments(): Promise<boolean> {
+    return await this.cs.getMyTreatments();
   }
   
   @Post()
@@ -22,7 +22,7 @@ export class CustomerController {
     return await this.cs.addTreatment(customer);
   }
   @Post('deleteTreatment')
-  async deleteTreatment(@Body() customer: Customer): Promise<boolean> {
+  async deleteTreatment(@Body() customer: Customer): Promise<any> {
     await this.ds.deleteHour(customer);
     return await this.cs.deleteTreatment(customer);
   }

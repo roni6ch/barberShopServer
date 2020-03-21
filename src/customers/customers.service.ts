@@ -12,8 +12,8 @@ export class CustomersService {
     return await this.cm.deleteMany();
   }
 
-  async getMyTreatments(id: string): Promise<boolean | PromiseLike<boolean>> {
-    const result = await this.cm.find({ id });
+  async getMyTreatments(): Promise<boolean | PromiseLike<boolean>> {
+    const result = await this.cm.find();
     return result;
   }
 
@@ -24,6 +24,11 @@ export class CustomersService {
   }
 
   async deleteTreatment(data: Customer) {
-    return await this.cm.deleteOne({_id: data['_id']}).exec();
+     let res = await this.cm.deleteOne({_id: data['_id']}).exec();
+     if (res.n > 0){
+      return data;
+     }
+      else
+      return false;
   }
 }

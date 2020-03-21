@@ -7,12 +7,13 @@ import { ObjectID } from 'mongodb';
 import * as moment from 'moment';
 import * as SETTINGS from '../settings/settings.json';
 import { Customer } from 'src/customers/customer.model';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class DataService {
   private data: Data[] = [];
 
-  constructor(@InjectModel('Data') private readonly dm: Model<Data>) {}
+  constructor(@InjectModel('Data') private readonly dm: Model<Data>,private readonly mailerService: MailerService) {}
 
   async deleteAllDocuments() {
     return await this.dm.deleteMany();
@@ -44,7 +45,6 @@ export class DataService {
         return v;
       });
       res.hours = resHours;
-      console.log(res);
       const result = await this.dm
         .updateOne({ _id: res._id }, { hours: resHours })
         .exec();
@@ -112,5 +112,25 @@ export class DataService {
     const result = await newCalendarDay.save();
     console.log('saved!');
     return result;
+  }
+  
+  sendContact(contact): any {
+    console.log(contact);
+    this
+    .mailerService
+    .sendMail({
+      to: 'Roni691986@gmail.com', // list of receivers
+      from: contact.mail, // sender address
+      subject: 'New Message from -> ' +contact.name, // Subject line
+      text: contact.phone, // plaintext body
+      html: `<b>${contact.message}</b>`, // HTML body content
+    })
+    .then(() => {
+      return true;
+    })
+    .catch((err) => {
+      console.log(err);
+      return false;
+    });
   }
 }
