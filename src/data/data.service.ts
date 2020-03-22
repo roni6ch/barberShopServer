@@ -1,19 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { constants } from 'src/constants';
 import { Data } from './data.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ObjectID } from 'mongodb';
-
 import * as moment from 'moment';
 import * as SETTINGS from '../settings/settings.json';
 import { Customer } from 'src/customers/customer.model';
-import { MailerService } from '@nestjs-modules/mailer';
+var nodemailer = require('nodemailer');
 
-@Injectable()
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: constants.mail.mail,
+    pass: constants.mail.pass,
+  },
+});
+
 export class DataService {
   private data: Data[] = [];
 
-  constructor(@InjectModel('Data') private readonly dm: Model<Data>,private readonly mailerService: MailerService) {}
+  constructor(@InjectModel('Data') private readonly dm: Model<Data>) {}
 
   async deleteAllDocuments() {
     return await this.dm.deleteMany();
@@ -113,24 +118,23 @@ export class DataService {
     console.log('saved!');
     return result;
   }
-  
-  sendContact(contact): any {
+
+  async sendContact(contact): Promise<boolean> {
     console.log(contact);
-    this
-    .mailerService
-    .sendMail({
-      to: 'Roni691986@gmail.com', // list of receivers
-      from: contact.mail, // sender address
-      subject: 'New Message from -> ' +contact.name, // Subject line
-      text: contact.phone, // plaintext body
-      html: `<b>${contact.message}</b>`, // HTML body content
-    })
-    .then(() => {
+    const message = {
+      from: contact.mail,
+      to: constants.mail.mailFrom,
+      subject: 'New Mail from Barber by - ' + contact.name,
+      text: contact.message + ' please call: ' + contact.phone,
+    };
+    //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
+    let res = await transporter.sendMail(message);
+    console.log(res);
+    if (res) {
+      console.log('Email succsess!');
       return true;
-    })
-    .catch((err) => {
-      console.log(err);
-      return false;
-    });
+    }
+    console.log('Email error!');
+    return false;
   }
 }

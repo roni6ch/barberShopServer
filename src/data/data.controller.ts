@@ -6,12 +6,12 @@ export class DataController {
   constructor(private dataService : DataService) {}
 
   @Get('hours')
-  getData(): any{
-    return this.dataService.getData(); 
+  async getData(){
+    return await this.dataService.getData(); 
   }
   @Post('sendContact')
-  sendContact(@Body() contact): any{
-    return this.dataService.sendContact(contact); 
+  async sendContact(@Body() contact):Promise<boolean>{
+    return await this.dataService.sendContact(contact); 
   }
   
 }
