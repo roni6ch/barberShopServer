@@ -3,6 +3,7 @@ import { Controller, Get, Post, Body, Res } from "@nestjs/common";
 import { SettingsService } from "./settings.service";
 import { Response } from 'express';
 
+
 @Controller('settings')
 export class SettingsController {
   constructor(private settingsService : SettingsService) {}
