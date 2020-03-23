@@ -4,11 +4,9 @@ import { Module } from '@nestjs/common';
 import { DataService } from './data.service';
 import { DataSchema } from './data.model';
 
-
-
 @Module({
   imports: [
-    MongooseModule.forFeature([{name:'Data',schema:DataSchema}])
+    MongooseModule.forFeature([{name:'Data',schema:DataSchema}]),
  ],
   controllers: [DataController],
   providers: [DataService]

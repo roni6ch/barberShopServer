@@ -6,6 +6,8 @@ import * as moment from 'moment';
 import * as SETTINGS from '../settings/settings.json';
 import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
+import { Logger } from 'winston';
+import { Inject } from '@nestjs/common';
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -18,10 +20,21 @@ var transporter = nodemailer.createTransport({
 export class DataService {
   private data: Data[] = [];
 
-  constructor(@InjectModel('Data') private readonly dm: Model<Data>) {}
+  constructor(
+    @InjectModel('Data') private readonly dm: Model<Data>,
+    @Inject('winston') private readonly logger: Logger,
+  ) {}
 
   async deleteAllDocuments() {
-    return await this.dm.deleteMany();
+    try {
+      let res = await this.dm.deleteMany();
+      if (res) return res;
+      else {
+        this.log('error', 'DataService -> deleteAllDocuments() in -> else res');
+      }
+    } catch (error) {
+      this.log('error', `DataService -> deleteAllDocuments() => ${error}`);
+    }
   }
 
   async getData() {
@@ -33,35 +46,51 @@ export class DataService {
       let date = +moment(weekStart).add(i, 'days');
       calendar.push(+new Date(date));
     }
-    return await this.dm
-      .find()
-      .where('dayTimestamp')
-      .in(calendar)
-      .exec();
+    try {
+      let res = await this.dm
+        .find()
+        .where('dayTimestamp')
+        .in(calendar)
+        .exec();
+      if (res) return res;
+      else {
+        this.log('error', 'DataService -> getData() in -> else res');
+      }
+    } catch (error) {
+      this.log('error', `DataService -> getData() => ${error}`);
+    }
   }
 
   async deleteHour(data: Customer) {
-    let res = await this.dm.findOne({ dayTimestamp: data.date });
-    if (res) {
-      let resHours = res.hours.map((v, i) => {
-        if (v.hour === data.hour) {
-          v.available = true;
+    try {
+      let res = await this.dm.findOne({ dayTimestamp: data.date });
+      if (res) {
+        let resHours = res.hours.map((v, i) => {
+          if (v.hour === data.hour) {
+            v.available = true;
+          }
+          return v;
+        });
+        res.hours = resHours;
+
+        try {
+          let result = await this.dm
+            .updateOne({ _id: res._id }, { hours: resHours })
+            .exec();
+          if (result.n === 0) {
+            this.log('error', `DataService -> updateOne() => empty res`);
+            return false;
+          }
+          return true;
+        } catch (error) {
+          this.log('error', `DataService -> updateOne() => ${error}`);
         }
-        return v;
-      });
-      res.hours = resHours;
-      const result = await this.dm
-        .updateOne({ _id: res._id }, { hours: resHours })
-        .exec();
-      if (result.n === 0) {
-        console.log('not updated!');
-        return false;
       } else {
-        console.log('updated!!!');
-        return true;
+        this.log('error', 'DataService -> deleteHour() in -> else res');
+        return false;
       }
-    } else {
-      console.log('no res found!');
+    } catch (error) {
+      this.log('error', `DataService -> deleteHour() => ${error}`);
       return false;
     }
   }
@@ -114,9 +143,17 @@ export class DataService {
       available: true,
       hours,
     });
-    const result = await newCalendarDay.save();
-    console.log('saved!');
-    return result;
+
+    try {
+      let result = await newCalendarDay.save();
+      if (result.n === 0) {
+        this.log('error', `DataService -> addCalendarDay() => empty res`);
+        return false;
+      }
+      return result;
+    } catch (error) {
+      this.log('error', `DataService -> addCalendarDay() => ${error}`);
+    }
   }
 
   async sendContact(contact): Promise<boolean> {
@@ -128,13 +165,24 @@ export class DataService {
       text: contact.message + ' from: ' + contact.phone,
     };
     //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
-    let res = await transporter.sendMail(message);
-    console.log(res);
-    if (res) {
-      console.log('Email succsess!');
-      return true;
+
+    try {
+      let res = await transporter.sendMail(message);
+      if (res) {
+        console.log('Email succsess!');
+        return true;
+      } else {
+        this.log('error', 'DataService -> sendContact() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `DataService -> sendContact() => ${error}`);
+      return false;
     }
-    console.log('Email error!');
-    return false;
+  }
+
+  log(type, data) {
+    console.error(data);
+    this.logger.log(type, data);
   }
 }
