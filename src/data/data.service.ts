@@ -124,8 +124,8 @@ export class DataService {
     const message = {
       from: contact.mail,
       to: constants.mail.mailFrom,
-      subject: 'New Mail from Barber by - ' + contact.name,
-      text: contact.message + ' please call: ' + contact.phone,
+      subject: SETTINGS.mail.subject + contact.name,
+      text: contact.message + ' from: ' + contact.phone,
     };
     //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
     let res = await transporter.sendMail(message);

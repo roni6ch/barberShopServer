@@ -6,7 +6,16 @@
   "calendar":{
     "daysOff":["Friday","Saturday"],
     "days":14,
-    "hours":[9,21]
+	"hours":[9,21],
+	"mail":"Roni@gmail.com",
+	"website":"www.barber.com",
+	"location":"הרצל 100 תל אביב",
+	"title":"Barber - פגישה חדשה",
+	"info":"תור חדש למספרת רוני"
+  },
+  "treatments":["short","long","color"],
+  "mail":{
+	  "subject":"New Mail From Barber website by - "
   },
 	"gallery":[
 		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(1).jpg",
