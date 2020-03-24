@@ -9,7 +9,7 @@ export class DataController {
     @Inject('winston') private readonly logger: Logger,
   ) {}
 
-  @Get('hours')
+  @Get()
   async getData() {
     try {
       let res = await this.dataService.getData();

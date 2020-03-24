@@ -13,6 +13,10 @@
 	"title":"Barber - פגישה חדשה",
 	"info":"תור חדש למספרת רוני"
   },
+  "owner":{
+	  "phone":"972502560005",
+	  "whatsapp":"שלום, קבעתי תור לתספורת"
+  },
   "treatments":["short","long","color"],
   "mail":{
 	  "subject":"New Mail From Barber website by - "

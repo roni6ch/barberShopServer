@@ -1,5 +1,13 @@
 import { CustomersService } from './customers.service';
-import { Controller, Get, Post, Body, Put, Query , Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Customer } from './customer.model';
 import { DataService } from 'src/data/data.service';
 import { Logger } from 'winston';
@@ -7,28 +15,93 @@ import { Inject } from '@nestjs/common';
 
 @Controller('customers')
 export class CustomerController {
-  constructor(private cs: CustomersService, private ds: DataService,
-    @Inject('winston') private readonly logger: Logger) {}
-    
+  constructor(
+    private cs: CustomersService,
+    private ds: DataService,
+    @Inject('winston') private readonly logger: Logger,
+  ) {}
+
   @Delete('deleteAllDocuments')
   async deleteAllDocuments(): Promise<boolean> {
-    await this.ds.deleteAllDocuments();
-    return await this.cs.deleteAllDocuments();
+    try {
+      if (await this.ds.deleteAllDocuments()) {
+        try {
+          let res = await this.cs.deleteAllDocuments();
+          if (res) {
+            return res;
+          }
+          else {
+            this.log('error','CustomerController -> cs deleteAllDocuments() in -> else res');
+            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+          }
+        } catch (error) {
+          this.log(
+            'error',
+            `CustomerController -> cs deleteAllDocuments() => ${error}`,
+          );
+          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+        }
+      }else{
+        this.log('error','CustomerController -> ds deleteAllDocuments() in -> else res');
+      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      this.log('error', `CustomerController -> ds deleteAllDocuments() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
   }
-  @Get('getMyTreatments')
-  async getMyTreatments(): Promise<boolean> {
-    return await this.cs.getMyTreatments();
-  }
-  
+
   @Post()
   async addTreatment(@Body() customer: Customer): Promise<boolean> {
-    await this.ds.setHour(customer);
-    return await this.cs.addTreatment(customer);
+    try {
+      let res = await this.ds.setHour(customer);
+      if (res) {
+        try {
+          let res = await this.cs.addTreatment(customer);
+          if (res) return res;
+          else {
+            this.log('error','CustomerController -> addTreatment() in -> else res');
+            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+          }
+        } catch (error) {
+          this.log('error',`CustomerController -> addTreatment() => ${error}`);
+          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+        }
+      }
+      else {
+        this.log('error','CustomerController -> setHour() in -> else res');
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      this.log('error',`CustomerController -> setHour() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
   }
   @Post('deleteTreatment')
   async deleteTreatment(@Body() customer: Customer): Promise<any> {
-    await this.ds.deleteHour(customer);
-    return await this.cs.deleteTreatment(customer);
+    try {
+      let res = await this.ds.deleteHour(customer);
+      if (res) {
+        try {
+          let res = await this.cs.deleteTreatment(customer);
+          if (res) return res;
+          else {
+            this.log('error','CustomerController -> deleteTreatment() in -> else res');
+            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+          }
+        } catch (error) {
+          this.log('error',`CustomerController -> deleteTreatment() => ${error}`);
+          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+        }
+      }
+      else {
+        this.log('error','CustomerController -> deleteHour() in -> else res');
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      this.log('error',`CustomerController -> deleteHour() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
   }
 
   log(type, data) {

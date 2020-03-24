@@ -7,7 +7,7 @@ import * as SETTINGS from '../settings/settings.json';
 import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
-import { Inject } from '@nestjs/common';
+import { Inject, HttpException, HttpStatus } from '@nestjs/common';
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -18,24 +18,13 @@ var transporter = nodemailer.createTransport({
 });
 
 export class DataService {
-  private data: Data[] = [];
 
   constructor(
     @InjectModel('Data') private readonly dm: Model<Data>,
     @Inject('winston') private readonly logger: Logger,
   ) {}
 
-  async deleteAllDocuments() {
-    try {
-      let res = await this.dm.deleteMany();
-      if (res) return res;
-      else {
-        this.log('error', 'DataService -> deleteAllDocuments() in -> else res');
-      }
-    } catch (error) {
-      this.log('error', `DataService -> deleteAllDocuments() => ${error}`);
-    }
-  }
+  
 
   async getData() {
     let calendar = [];
@@ -55,12 +44,43 @@ export class DataService {
       if (res) return res;
       else {
         this.log('error', 'DataService -> getData() in -> else res');
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
     } catch (error) {
       this.log('error', `DataService -> getData() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
-
+  async setHour(data) {
+    let res = await this.dm.findOne({ dayTimestamp: +data.date }).exec();
+    if (res) {
+      console.log('res found!');
+      let resHours = res.hours.map((v, i) => {
+        if (v.hour === data.hour) {
+          v.available = false;
+        }
+        return v;
+      });
+      if (resHours.length > 0) {
+        console.log('res length!');
+        const result = await this.dm
+          .updateOne({ _id: res._id }, { hours: resHours })
+          .exec();
+        if (result.n === 0) {
+          this.log('error', 'DataService -> setHour() in -> result = 0');
+          throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        } else {
+          console.log('updated!!!');
+          return true;
+        }
+      } else {
+        console.log('no res', res);
+        this.log('error', 'DataService -> setHour() in -> else res');
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      }
+    }
+    this.addCalendarDay(data);
+  }
   async deleteHour(data: Customer) {
     try {
       let res = await this.dm.findOne({ dayTimestamp: data.date });
@@ -79,50 +99,60 @@ export class DataService {
             .exec();
           if (result.n === 0) {
             this.log('error', `DataService -> updateOne() => empty res`);
+            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
             return false;
           }
           return true;
         } catch (error) {
           this.log('error', `DataService -> updateOne() => ${error}`);
+          throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
         }
       } else {
-        this.log('error', 'DataService -> deleteHour() in -> else res');
-        return false;
+        this.log('error', 'DataService -> findOne() in -> else res');
+        throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
       }
     } catch (error) {
-      this.log('error', `DataService -> deleteHour() => ${error}`);
-      return false;
+      this.log('error', `DataService -> findOne() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
 
-  async setHour(data) {
-    let res = await this.dm.findOne({ dayTimestamp: +data.date }).exec();
-    if (res) {
-      console.log('res found!');
-      let resHours = res.hours.map((v, i) => {
-        if (v.hour === data.hour) {
-          v.available = false;
-        }
-        return v;
-      });
-      if (resHours.length > 0) {
-        console.log('res length!');
-        const result = await this.dm
-          .updateOne({ _id: res._id }, { hours: resHours })
-          .exec();
-        if (result.n === 0) {
-          console.log('not updated!');
-          return false;
-        } else {
-          console.log('updated!!!');
-          return true;
-        }
-      } else {
-        console.log('no res', res);
+  async deleteAllDocuments() {
+    try {
+      let res = await this.dm.deleteMany();
+      if (res) return res;
+      else {
+        this.log('error', 'DataService -> deleteAllDocuments() in -> else res');
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
-      return false;
+    } catch (error) {
+      this.log('error', `DataService -> deleteAllDocuments() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
-    this.addCalendarDay(data);
+  }
+  async sendContact(contact): Promise<boolean> {
+    console.log(contact);
+    const message = {
+      from: contact.mail,
+      to: constants.mail.mailFrom,
+      subject: SETTINGS.mail.subject + contact.name,
+      text: contact.message + ' from: ' + contact.phone,
+    };
+    //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
+
+    try {
+      let res = await transporter.sendMail(message);
+      if (res) {
+        console.log('Email succsess!');
+        return true;
+      } else {
+        this.log('error', 'DataService -> sendContact() in -> else res');
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      this.log('error', `DataService -> sendContact() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
   }
   async addCalendarDay(data) {
     console.log('new day -> create one');
@@ -148,39 +178,14 @@ export class DataService {
       let result = await newCalendarDay.save();
       if (result.n === 0) {
         this.log('error', `DataService -> addCalendarDay() => empty res`);
-        return false;
+        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
       }
       return result;
     } catch (error) {
       this.log('error', `DataService -> addCalendarDay() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
-
-  async sendContact(contact): Promise<boolean> {
-    console.log(contact);
-    const message = {
-      from: contact.mail,
-      to: constants.mail.mailFrom,
-      subject: SETTINGS.mail.subject + contact.name,
-      text: contact.message + ' from: ' + contact.phone,
-    };
-    //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
-
-    try {
-      let res = await transporter.sendMail(message);
-      if (res) {
-        console.log('Email succsess!');
-        return true;
-      } else {
-        this.log('error', 'DataService -> sendContact() in -> else res');
-        return false;
-      }
-    } catch (error) {
-      this.log('error', `DataService -> sendContact() => ${error}`);
-      return false;
-    }
-  }
-
   log(type, data) {
     console.error(data);
     this.logger.log(type, data);
