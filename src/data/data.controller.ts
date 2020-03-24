@@ -16,6 +16,7 @@ export class DataController {
       if (res) return res;
       else {
         this.log('error','DataController -> getData() in -> else res');
+        return false;
       }
     } catch (error) {
       this.log('error',`DataController -> getData() => ${error}`);
@@ -28,6 +29,7 @@ export class DataController {
       if (res) return res;
       else {
         this.log('error','DataController -> sendContact() in -> else res');
+        return false;
       }
     } catch (error) {
       this.log('error',`DataController -> sendContact() => ${error}`);

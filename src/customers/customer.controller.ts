@@ -32,7 +32,7 @@ export class CustomerController {
           }
           else {
             this.log('error','CustomerController -> cs deleteAllDocuments() in -> else res');
-            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+            return false;
           }
         } catch (error) {
           this.log(
@@ -43,7 +43,7 @@ export class CustomerController {
         }
       }else{
         this.log('error','CustomerController -> ds deleteAllDocuments() in -> else res');
-      throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error', `CustomerController -> ds deleteAllDocuments() => ${error}`);
@@ -61,7 +61,7 @@ export class CustomerController {
           if (res) return res;
           else {
             this.log('error','CustomerController -> addTreatment() in -> else res');
-            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+            return false;
           }
         } catch (error) {
           this.log('error',`CustomerController -> addTreatment() => ${error}`);
@@ -70,7 +70,7 @@ export class CustomerController {
       }
       else {
         this.log('error','CustomerController -> setHour() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error',`CustomerController -> setHour() => ${error}`);
@@ -87,7 +87,7 @@ export class CustomerController {
           if (res) return res;
           else {
             this.log('error','CustomerController -> deleteTreatment() in -> else res');
-            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+            return false;
           }
         } catch (error) {
           this.log('error',`CustomerController -> deleteTreatment() => ${error}`);
@@ -96,7 +96,7 @@ export class CustomerController {
       }
       else {
         this.log('error','CustomerController -> deleteHour() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error',`CustomerController -> deleteHour() => ${error}`);

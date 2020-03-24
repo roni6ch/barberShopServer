@@ -44,7 +44,7 @@ export class DataService {
       if (res) return res;
       else {
         this.log('error', 'DataService -> getData() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error', `DataService -> getData() => ${error}`);
@@ -68,7 +68,7 @@ export class DataService {
           .exec();
         if (result.n === 0) {
           this.log('error', 'DataService -> setHour() in -> result = 0');
-          throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+          return false;
         } else {
           console.log('updated!!!');
           return true;
@@ -99,17 +99,16 @@ export class DataService {
             .exec();
           if (result.n === 0) {
             this.log('error', `DataService -> updateOne() => empty res`);
-            throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
             return false;
           }
           return true;
         } catch (error) {
           this.log('error', `DataService -> updateOne() => ${error}`);
-          throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
         }
       } else {
         this.log('error', 'DataService -> findOne() in -> else res');
-        throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+        return false;
       }
     } catch (error) {
       this.log('error', `DataService -> findOne() => ${error}`);
@@ -123,7 +122,7 @@ export class DataService {
       if (res) return res;
       else {
         this.log('error', 'DataService -> deleteAllDocuments() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error', `DataService -> deleteAllDocuments() => ${error}`);
@@ -147,7 +146,7 @@ export class DataService {
         return true;
       } else {
         this.log('error', 'DataService -> sendContact() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error', `DataService -> sendContact() => ${error}`);
@@ -178,7 +177,7 @@ export class DataService {
       let result = await newCalendarDay.save();
       if (result.n === 0) {
         this.log('error', `DataService -> addCalendarDay() => empty res`);
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
       return result;
     } catch (error) {

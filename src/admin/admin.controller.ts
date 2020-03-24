@@ -1,6 +1,7 @@
-import { Controller, Param, Put, Query, HttpException, HttpStatus, Inject, Get } from '@nestjs/common';
+import { Controller, Param, Put, Query, HttpException, HttpStatus, Inject, Get, Post, Body } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Logger } from 'winston';
+import { Admin } from './admin.model';
 
 @Controller('admin')
 export class AdminController {
@@ -14,13 +15,28 @@ export class AdminController {
       if (res) return res;
       else {
         this.log('error','CustomerController -> getMyTreatments() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error',`CustomerController -> getMyTreatments() => ${error}`);
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
+  @Post('checkPermissions')
+  async checkPermissions(@Body() token: Admin): Promise<boolean> {
+    try {
+      let res = await this.as.checkPermissions(token);
+      if (res) return res;
+      else {
+        this.log('error','CustomerController -> permissions() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error',`CustomerController -> permissions() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
+  }
+  
   
   @Put()
   async setAvailability(
@@ -32,7 +48,7 @@ export class AdminController {
       if (res) return res;
       else {
         this.log('error','AdminController -> setAvailability() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error',`AdminController -> setAvailability() => ${error}`);

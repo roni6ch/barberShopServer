@@ -14,7 +14,7 @@ export class CustomersService {
       if (res) return res;
       else {
         this.log('error','CustomersService -> deleteAllDocuments() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error',`CustomersService -> deleteAllDocuments() => ${error}`);
@@ -29,7 +29,7 @@ export class CustomersService {
       if (res) return res;
       else {
         this.log('error','CustomersService -> save() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error',`CustomersService -> save() => ${error}`);
@@ -43,7 +43,7 @@ export class CustomersService {
       if (res.n > 0) return data;
       else {
         this.log('error','CustomersService -> deleteOne() in -> else res');
-        throw new HttpException('BadRequest', HttpStatus.BAD_REQUEST);
+        return false;
       }
     } catch (error) {
       this.log('error',`CustomersService -> deleteOne() => ${error}`);
