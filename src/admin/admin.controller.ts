@@ -24,6 +24,7 @@ export class AdminController {
   }
   @Post('checkPermissions')
   async checkPermissions(@Body() token: Admin): Promise<boolean> {
+    
     try {
       let res = await this.as.checkPermissions(token);
       if (res) return res;

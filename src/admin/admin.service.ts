@@ -28,9 +28,7 @@ export class AdminService {
 
   async checkPermissions(token: Admin) {
     try {
-      console.log(token);
       let res = await this.am.find({ admin:token.admin });
-      console.log(res);
       if (res.length > 0) return true;
       else {
         this.log('error','AdminService -> checkPermissions() in -> else res');
