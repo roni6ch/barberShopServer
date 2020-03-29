@@ -1,3 +1,4 @@
+import { UsersModule } from './users/users.module';
 import { SettingsService } from './settings/settings.service';
 import { Module } from '@nestjs/common';
 import { DataModule } from './data/data.module';
@@ -13,6 +14,7 @@ import * as winston from 'winston';
   imports: [
     DataModule,
     CustomersModule,
+    UsersModule,
     AdminModule,
     WinstonModule.forRoot({
       format: winston.format.json(),

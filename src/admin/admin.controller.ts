@@ -9,32 +9,27 @@ export class AdminController {
 
 
   @Get('getMyTreatments')
-  async getMyTreatments(): Promise<boolean> {
+  async getMyTreatments(){
     try {
       let res = await this.as.getMyTreatments();
       if (res) return res;
       else {
-        this.log('error','CustomerController -> getMyTreatments() in -> else res');
+        this.log('error','AdminController -> getMyTreatments() in -> else res');
         return false;
       }
     } catch (error) {
-      this.log('error',`CustomerController -> getMyTreatments() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      this.log('error',`AdminController -> getMyTreatments() => ${error}`);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
   @Post('checkPermissions')
-  async checkPermissions(@Body() token: Admin): Promise<boolean> {
+  async checkPermissions(@Body() token: Admin){
     
     try {
-      let res = await this.as.checkPermissions(token);
-      if (res) return res;
-      else {
-        this.log('error','CustomerController -> permissions() in -> else res');
-        return false;
-      }
+      return await this.as.checkPermissions(token);
     } catch (error) {
-      this.log('error',`CustomerController -> permissions() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      this.log('error',`AdminController -> permissions() => ${error}`);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
   
@@ -53,7 +48,7 @@ export class AdminController {
       }
     } catch (error) {
       this.log('error',`AdminController -> setAvailability() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
   log(type, data) {
