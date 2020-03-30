@@ -15,7 +15,12 @@ export class UsersController {
   async validateUser(@Body('username') username: string,@Body('password') password: string) {
     return await this.us.validateUser(username,password);
   }
+  @Post('generateToken')
+  async generateToken(@Body('username') username: string,@Body('password') password: string) {
+    return await this.us.generateToken(username,password);
+  }
 
+  
 
   log(type, data) {
     console.error(data);
