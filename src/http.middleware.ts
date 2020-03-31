@@ -6,8 +6,7 @@ var jwt = require('jsonwebtoken');
 @Injectable()
 export class HttpMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: Function) {
-    let host = req.headers.host.split(":")[0];
-    req.body.host = host;
+    req.body.host = req.headers.origin;
     if(!req.headers.authorization) {
         return res.status(401).send('Unauthorized request');
       }
