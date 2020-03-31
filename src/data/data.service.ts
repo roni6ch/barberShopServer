@@ -37,6 +37,7 @@ export class DataService {
         return v.calendar.website === host;
       });
       console.log('host',host);
+      console.log(owner);
       
       if (owner.length > 0){
     for (let i = 0; i < owner[0].calendar.days * 2; i++) {

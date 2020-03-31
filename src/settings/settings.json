@@ -60,7 +60,7 @@
 						"slideDurationSetting": 600
 				},
 				"calendar":{
-					"daysOff":["Friday","Saturday"],
+					"daysOff":["Saturday"],
 					"days":14,
 					"hours":[9,21],
 					"mail":"Roni691986@gmail.com",
@@ -73,16 +73,16 @@
 					"phone":"972502560005",
 					"whatsapp":"שלום, קבעתי תור לתספורת"
 				},
-				"treatments":["short","long","color"],
+				"treatments":["short","color"],
 				"mail":{
 					"subject":"New Mail From Barber website by - "
 				},
 					"gallery":[
-						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(1).jpg",
-						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(2).jpg",
 						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(3).jpg",
 						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(4).jpg",
 						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(5).jpg",
+						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(1).jpg",
+						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(2).jpg",
 						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(6).jpg",
 						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(7).jpg",
 						"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(8).jpg",
