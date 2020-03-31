@@ -14,14 +14,16 @@ export class UsersService {
     @Inject('winston') private readonly logger: Logger,
   ) {}
 
-  async register(username, password) {
+  async register(username, password,req) {
+    let host = req.body.host;
     try {
-      let findUser = await this.um.findOne({ username }).exec();
+      let findUser = await this.um.findOne({ username ,host}).exec();
       if (!findUser) {
         try {
           let data = {
             username,
             password,
+            host
           };
           const newUser = new this.um(data);
           let res = await newUser.save();
@@ -52,8 +54,9 @@ export class UsersService {
 
 
 
-  async validateUser(username: string, password: string) {
-    const user = await this.um.findOne({ username }).exec();
+  async validateUser(username: string, password: string,req) {
+    let host = req.body.host;
+    const user = await this.um.findOne({ username,host }).exec();
     if (user !== null) {
       if (password === user.password)  return this.generateToken(username, password);
       else {

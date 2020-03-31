@@ -1,4 +1,4 @@
-import { Injectable, Inject, HttpStatus, HttpException } from '@nestjs/common';
+import { Injectable, Inject, HttpStatus, HttpException, Req } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Data } from 'src/data/data.model';
 import { Model } from 'mongoose';
@@ -18,9 +18,10 @@ export class AdminService {
     @Inject('winston') private readonly logger: Logger,
   ) {}
 
-  async getMyTreatments(): Promise<boolean | PromiseLike<boolean>> {
+  async getMyTreatments(req): Promise<boolean | PromiseLike<boolean>> {
+    let host = req.body.host;
     try {
-      let res = await this.cm.find();
+      let res = await this.cm.find({host});
       if (res) return res;
       else {
         this.log('error', 'AdminService -> getMyTreatments() in -> else res');
@@ -32,19 +33,24 @@ export class AdminService {
     }
   }
 
-  async checkPermissions(token: Admin) {
+  async checkPermissions(token: Admin,req) {
+    let host = req.body.host;
     try {
       return jwt.verify(token.username, constants.jwtSecret, async (err, decoded) => {
-        if (decoded.username === SETTINGS.calendar.mail) {
-          let res = await this.am.find({ username: decoded.username });
-          if (res.length > 0) return true;
-          else {
-            this.log(
-              'error',
-              'AdminService -> checkPermissions() in -> else res',
-            );
-            return false;
-          }
+        let owner = SETTINGS.owners.filter((v,i)=>{
+          return v.calendar.website === host;
+        });
+        if (owner.length > 0)
+          if (decoded.username.toLowerCase() === owner[0].calendar.mail.toLowerCase()) {
+            let res = await this.am.find({ username: decoded.username });
+            if (res.length > 0) return true;
+            else {
+              this.log(
+                'error',
+                'AdminService -> checkPermissions() in -> else res',
+              );
+              return false;
+            }
         }else{
           return false; //not an admin
         }

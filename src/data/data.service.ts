@@ -7,7 +7,7 @@ import * as SETTINGS from '../settings/settings.json';
 import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
-import { Inject, HttpException, HttpStatus } from '@nestjs/common';
+import { Inject, HttpException, HttpStatus, Req } from '@nestjs/common';
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -26,18 +26,26 @@ export class DataService {
 
   
 
-  async getData() {
+  async getData(req) {
+    let host = req.body.host;
     let calendar = [];
     var weekStart = moment()
       .clone()
       .startOf('week');
-    for (let i = 0; i < SETTINGS.calendar.days * 2; i++) {
+
+      let owner = SETTINGS.owners.filter((v,i)=>{
+        return v.calendar.website === host;
+      });
+      console.log('host',host);
+      
+      if (owner.length > 0){
+    for (let i = 0; i < owner[0].calendar.days * 2; i++) {
       let date = +moment(weekStart).add(i, 'days');
       calendar.push(+new Date(date));
     }
     try {
       let res = await this.dm
-        .find()
+        .find({host})
         .where('dayTimestamp')
         .in(calendar)
         .exec();
@@ -46,15 +54,18 @@ export class DataService {
         this.log('error', 'DataService -> getData() in -> else res');
         return false;
       }
-    } catch (error) {
+    }catch (error) {
       this.log('error', `DataService -> getData() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
+   } else{
+    this.log('error', 'DataService -> getData() in -> no owner');
+   }
   }
-  async setHour(data) {
-    let res = await this.dm.findOne({ dayTimestamp: +data.date }).exec();
+  async setHour(data,req) {
+    let host = req.body.host;
+    let res = await this.dm.findOne({ dayTimestamp: +data.date , host }).exec();
     if (res) {
-      console.log('res found!');
       let resHours = res.hours.map((v, i) => {
         if (v.hour === data.hour) {
           v.available = false;
@@ -62,7 +73,6 @@ export class DataService {
         return v;
       });
       if (resHours.length > 0) {
-        console.log('res length!');
         const result = await this.dm
           .updateOne({ _id: res._id }, { hours: resHours })
           .exec();
@@ -76,14 +86,16 @@ export class DataService {
       } else {
         console.log('no res', res);
         this.log('error', 'DataService -> setHour() in -> else res');
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+        return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
       }
     }
-    this.addCalendarDay(data);
+    this.addCalendarDay(data,req);
+    return true;
   }
-  async deleteHour(data: Customer) {
+  async deleteHour(data: Customer,req) {
+    let host = req.body.host;
     try {
-      let res = await this.dm.findOne({ dayTimestamp: data.date });
+      let res = await this.dm.findOne({ dayTimestamp: data.date,host });
       if (res) {
         let resHours = res.hours.map((v, i) => {
           if (v.hour === data.hour) {
@@ -104,7 +116,7 @@ export class DataService {
           return true;
         } catch (error) {
           this.log('error', `DataService -> updateOne() => ${error}`);
-          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+          return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
         }
       } else {
         this.log('error', 'DataService -> findOne() in -> else res');
@@ -112,7 +124,7 @@ export class DataService {
       }
     } catch (error) {
       this.log('error', `DataService -> findOne() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
 
@@ -126,20 +138,25 @@ export class DataService {
       }
     } catch (error) {
       this.log('error', `DataService -> deleteAllDocuments() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
-  async sendContact(contact): Promise<boolean> {
-    console.log(contact);
-    const message = {
-      from: contact.mail,
-      to: constants.mail.mailFrom,
-      subject: SETTINGS.mail.subject + contact.name,
-      text: contact.message + ' from: ' + contact.phone,
-    };
+  async sendContact(contact,req) {
+    let host = req.body.host;
     //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
 
     try {
+
+    let ownerMail = SETTINGS.owners.filter((v,i)=>{
+      return v.calendar.website === host;
+    });
+    if (ownerMail.length > 0){
+    const message = {
+      from: contact.mail,
+      to: ownerMail[0].calendar.mail,
+      subject: ownerMail[0].mail.subject + contact.name,
+      text: contact.message + ' from: ' + contact.phone,
+    };
       let res = await transporter.sendMail(message);
       if (res) {
         console.log('Email succsess!');
@@ -148,15 +165,23 @@ export class DataService {
         this.log('error', 'DataService -> sendContact() in -> else res');
         return false;
       }
+    }else{
+      this.log('error', `DataService -> sendContact() => no owner mail`);
+    }
     } catch (error) {
       this.log('error', `DataService -> sendContact() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
-  async addCalendarDay(data) {
+  async addCalendarDay(data,req) {
+    let host = req.body.host;
     console.log('new day -> create one');
     let hours = [];
-    for (let h = SETTINGS.calendar.hours[0]; h < SETTINGS.calendar.hours[1]; ) {
+    let owner = SETTINGS.owners.filter((v,i)=>{
+      return v.calendar.website === host;
+    });
+    if (owner.length > 0){
+    for (let h = owner[0].calendar.hours[0]; h < owner[0].calendar.hours[1]; ) {
       hours.push({
         hour: `${h}:00`,
         available: data.hour !== `${h}:00` ? true : false,
@@ -171,6 +196,7 @@ export class DataService {
       dayTimestamp: data.date,
       available: true,
       hours,
+      host
     });
 
     try {
@@ -182,8 +208,9 @@ export class DataService {
       return result;
     } catch (error) {
       this.log('error', `DataService -> addCalendarDay() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
+  }
   }
   log(type, data) {
     console.error(data);

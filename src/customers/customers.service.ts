@@ -22,7 +22,9 @@ export class CustomersService {
     }
   }
 
-  async addTreatment(customer) {
+  async addTreatment(customer,req) {
+    let host = req.body.host;
+    customer.host = host;
     const newTreatment = new this.cm(customer);
     try {
       let res = await newTreatment.save();
@@ -37,9 +39,10 @@ export class CustomersService {
     }
   }
 
-  async deleteTreatment(data: Customer) {
+  async deleteTreatment(data: Customer,req) {
+    let host = req.body.host;
     try {
-      let res = await this.cm.deleteOne({_id: data['_id']}).exec();
+      let res = await this.cm.deleteOne({_id: data['_id'],host}).exec();
       if (res.n > 0) return data;
       else {
         this.log('error','CustomersService -> deleteOne() in -> else res');

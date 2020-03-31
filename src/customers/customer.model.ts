@@ -9,6 +9,7 @@ export const CustomerSchema = new mongoose.Schema({
     date: { type: String, required: true },
     dateStr: { type: String, required: true },
     hour: { type: String, required: true },
+    host: { type: String, required: true },
     other: { type: String }
 }, { collection: 'customers' })
 
@@ -21,5 +22,6 @@ export interface Customer extends mongoose.Document {
   date: string;
   dateStr: string,
   hour: string;
+  host: string;
   other: string;
 }

@@ -7,6 +7,7 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { Customer } from './customer.model';
 import { DataService } from 'src/data/data.service';
@@ -52,12 +53,12 @@ export class CustomerController {
   }
 
   @Post()
-  async addTreatment(@Body() customer: Customer): Promise<boolean> {
+  async addTreatment(@Body() customer: Customer,@Req() req): Promise<boolean> {
     try {
-      let res = await this.ds.setHour(customer);
+      let res = await this.ds.setHour(customer,req);
       if (res) {
         try {
-          let res = await this.cs.addTreatment(customer);
+          let res = await this.cs.addTreatment(customer,req);
           if (res) return res;
           else {
             this.log('error','CustomerController -> addTreatment() in -> else res');
@@ -78,12 +79,12 @@ export class CustomerController {
     }
   }
   @Post('deleteTreatment')
-  async deleteTreatment(@Body() customer: Customer): Promise<any> {
+  async deleteTreatment(@Body() customer: Customer,@Req() req): Promise<any> {
     try {
-      let res = await this.ds.deleteHour(customer);
+      let res = await this.ds.deleteHour(customer,req);
       if (res) {
         try {
-          let res = await this.cs.deleteTreatment(customer);
+          let res = await this.cs.deleteTreatment(customer,req);
           if (res) return res;
           else {
             this.log('error','CustomerController -> deleteTreatment() in -> else res');

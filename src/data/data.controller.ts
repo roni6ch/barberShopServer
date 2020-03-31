@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Inject, Req } from '@nestjs/common';
 import { DataService } from './data.service';
 import { Logger } from 'winston';
 
@@ -10,9 +10,9 @@ export class DataController {
   ) {}
 
   @Get()
-  async getData() {
+  async getData(@Req() req) {
     try {
-      let res = await this.dataService.getData();
+      let res = await this.dataService.getData(req);
       if (res) return res;
       else {
         this.log('error','DataController -> getData() in -> else res');
@@ -23,9 +23,9 @@ export class DataController {
     }
   }
   @Post('sendContact')
-  async sendContact(@Body() contact): Promise<boolean> {
+  async sendContact(@Body() contact,@Req() req){
     try {
-      let res = await this.dataService.sendContact(contact);
+      let res = await this.dataService.sendContact(contact,req);
       if (res) return res;
       else {
         this.log('error','DataController -> sendContact() in -> else res');

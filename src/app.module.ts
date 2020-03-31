@@ -44,14 +44,6 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(HttpMiddleware)
-      .forRoutes(AdminController,DataController,CustomerController);
-  }
-  constructor(){
-    this.getHost();
-  }
-  getHost(){
-    let hostname = require("os").hostname();
-    console.log(hostname);
-    return hostname;
+      .forRoutes(AdminController,DataController,CustomerController,SettingsController);
   }
 }

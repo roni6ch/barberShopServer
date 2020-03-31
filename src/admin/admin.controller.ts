@@ -1,4 +1,4 @@
-import { Controller, Param, Put, Query, HttpException, HttpStatus, Inject, Get, Post, Body } from '@nestjs/common';
+import { Controller, Param, Put, Query, HttpException, HttpStatus, Inject, Get, Post, Body, Req } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Logger } from 'winston';
 import { Admin } from './admin.model';
@@ -9,9 +9,9 @@ export class AdminController {
 
 
   @Get('getMyTreatments')
-  async getMyTreatments(){
+  async getMyTreatments(@Req() req){
     try {
-      let res = await this.as.getMyTreatments();
+      let res = await this.as.getMyTreatments(req);
       if (res) return res;
       else {
         this.log('error','AdminController -> getMyTreatments() in -> else res');
@@ -23,10 +23,10 @@ export class AdminController {
     }
   }
   @Post('checkPermissions')
-  async checkPermissions(@Body() token: Admin){
+  async checkPermissions(@Body() token: Admin,@Req() req){
     
     try {
-      return await this.as.checkPermissions(token);
+      return await this.as.checkPermissions(token,req);
     } catch (error) {
       this.log('error',`AdminController -> permissions() => ${error}`);
       return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);

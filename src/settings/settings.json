@@ -1,54 +1,58 @@
 {
-	"parallax": {
-		"scrollSensitivitySetting": 30,
-		"slideDurationSetting": 600
-  },
-  "calendar":{
-    "daysOff":["Friday","Saturday"],
-    "days":14,
-	"hours":[9,21],
-	"mail":"Roni@gmail.com",
-	"website":"www.barber.com",
-	"location":"הרצל 100 תל אביב",
-	"title":"Barber - פגישה חדשה",
-	"info":"תור חדש למספרת רוני"
-  },
-  "owner":{
-	  "phone":"972502560005",
-	  "whatsapp":"שלום, קבעתי תור לתספורת"
-  },
-  "treatments":["short","long","color"],
-  "mail":{
-	  "subject":"New Mail From Barber website by - "
-  },
-	"gallery":[
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(1).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(2).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(3).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(4).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(5).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(6).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(7).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(8).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(9).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(10).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(11).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(12).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(13).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(14).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(15).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(16).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(17).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(18).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(19).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(20).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(7).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(8).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(9).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(10).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(11).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(12).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(13).jpg",
-		"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(14).jpg"
+	"owners":[
+		{
+					"parallax": {
+							"scrollSensitivitySetting": 30,
+							"slideDurationSetting": 600
+					},
+					"calendar":{
+						"daysOff":["Friday","Saturday"],
+						"days":14,
+						"hours":[9,21],
+						"mail":"Roni691986@gmail.com",
+						"website":"localhost",
+						"location":"הרצל 100 תל אביב",
+						"title":"Barber - פגישה חדשה",
+						"info":"תור חדש למספרת רוני"
+					},
+					"owner":{
+						"phone":"972502560005",
+						"whatsapp":"שלום, קבעתי תור לתספורת"
+					},
+					"treatments":["short","long","color"],
+					"mail":{
+						"subject":"New Mail From Barber website by - "
+					},
+						"gallery":[
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(1).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(2).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(3).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(4).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(5).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(6).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(7).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(8).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(9).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(10).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(11).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(12).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(13).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(14).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(15).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(16).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(17).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(18).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(19).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(20).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(7).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(8).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(9).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(10).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(11).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(12).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(13).jpg",
+							"https://mdbootstrap.com/img/Photos/Lightbox/Thumbnail/img%20(14).jpg"
+						]
+			}
 	]
 }
