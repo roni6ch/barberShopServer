@@ -50,6 +50,7 @@ export class DataService {
         .where('dayTimestamp')
         .in(calendar)
         .exec();
+        console.log(res);
       if (res) return res;
       else {
         this.log('error', 'DataService -> getData() in -> else res');
