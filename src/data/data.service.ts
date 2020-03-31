@@ -46,7 +46,7 @@ export class DataService {
     }
     try {
       let res = await this.dm
-        .find({host})
+        .find({host:host.toLowerCase().trim()})
         .where('dayTimestamp')
         .in(calendar)
         .exec();
