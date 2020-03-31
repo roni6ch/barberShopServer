@@ -46,4 +46,12 @@ export class AppModule {
       .apply(HttpMiddleware)
       .forRoutes(AdminController,DataController,CustomerController);
   }
+  constructor(){
+    this.getHost();
+  }
+  getHost(){
+    let hostname = require("os").hostname();
+    console.log(hostname);
+    return hostname;
+  }
 }

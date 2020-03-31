@@ -7,7 +7,8 @@ var jwt = require('jsonwebtoken');
 export class HttpMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: Function) {
     let host = req.headers.host;
-    req.host = host;
+    console.log(host);
+    req.body.host = host;
     if(!req.headers.authorization) {
         return res.status(401).send('Unauthorized request');
       }
