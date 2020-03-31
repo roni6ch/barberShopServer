@@ -35,7 +35,11 @@ export class DataService {
 
     if (owner.length > 0) {
       for (let i = 0; i < owner[0].calendar.days * 2; i++) {
-        let date = moment(weekStart).add(i, 'days').format();
+        let date = moment(weekStart).add(i, 'days').toDate();
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        date.setMilliseconds(0);
         calendar.push((+new Date(date)).toString());
       }
       console.log(calendar);
