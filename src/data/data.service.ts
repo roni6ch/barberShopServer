@@ -26,9 +26,7 @@ export class DataService {
   async getData(req) {
     let host = req.body.host;
     let calendar = [];
-    var weekStart = moment().utcOffset(0).set({hour:0,minute:0,second:0,millisecond:0})
-      .clone()
-      .startOf('week');
+    var weekStart = moment().clone().startOf('week');
 
     let owner = SETTINGS.owners.filter((v, i) => {
       return v.calendar.website === host;
@@ -37,9 +35,8 @@ export class DataService {
 
     if (owner.length > 0) {
       for (let i = 0; i < owner[0].calendar.days * 2; i++) {
-        let date = +moment(weekStart).add(i, 'days');
-        let day = new Date(date).setHours(0,0,0);
-        calendar.push((+day).toString());
+        let date = moment(weekStart).add(i, 'days');
+        calendar.push((+new Date(+date)).toString());
       }
       console.log(calendar);
       
