@@ -6,10 +6,16 @@ import { Response } from 'express';
 
 @Controller('settings')
 export class SettingsController {
-  constructor(private settingsService : SettingsService) {}
+  constructor(private settingsService : SettingsService) {
+  }
 
   @Get()
-  getSettings(@Res() res: Response,@Req() req): any{
-    return this.settingsService.getSettings(res,req); 
+  async getSettings(@Res() res: Response,@Req() req){
+    //no longer activated - nor settings.json
+    return await this.settingsService.getSettings(res,req); 
+  }
+  @Get('getSettingsFromDB')
+  async getSettingsFromDB(@Req() req) : Promise<any>{
+    return await this.settingsService.getSettingsFromDB(req); 
   }
 }

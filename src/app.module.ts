@@ -2,7 +2,6 @@ import { DataController } from './data/data.controller';
 import { AdminController } from './admin/admin.controller';
 import { HttpMiddleware } from './http.middleware';
 import { UsersModule } from './users/users.module';
-import { SettingsService } from './settings/settings.service';
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { DataModule } from './data/data.module';
 import { constants } from './constants';
@@ -13,6 +12,7 @@ import { AdminModule } from './admin/admin.module';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { CustomerController } from './customers/customer.controller';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -20,6 +20,7 @@ import { CustomerController } from './customers/customer.controller';
     CustomersModule,
     UsersModule,
     AdminModule,
+    SettingsModule,
     WinstonModule.forRoot({
       format: winston.format.json(),
       defaultMeta: { service: 'user-service' },
@@ -37,13 +38,13 @@ import { CustomerController } from './customers/customer.controller';
       },
     ),
   ],
-  controllers: [SettingsController],
-  providers: [SettingsService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(HttpMiddleware)
-      .forRoutes(AdminController,DataController,CustomerController,SettingsController);
+      .forRoutes(AdminController,DataController,CustomerController);
   }
 }

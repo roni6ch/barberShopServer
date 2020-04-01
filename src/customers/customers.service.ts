@@ -61,7 +61,6 @@ export class CustomersService {
     let username = req.body.username;
     try {
       let res = await this.cm.find({host,username,date: { $gte:+moment().subtract(1,'days').endOf('day')} }).exec();
-      console.log(res);
       if (res) return res;
       else {
         this.log('error','CustomersService -> userTreatments() in -> else res');
