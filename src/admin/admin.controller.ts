@@ -24,7 +24,6 @@ export class AdminController {
   }
   @Post('checkPermissions')
   async checkPermissions(@Body() token: Admin,@Req() req){
-    
     try {
       return await this.as.checkPermissions(token,req);
     } catch (error) {

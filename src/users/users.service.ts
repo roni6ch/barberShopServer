@@ -6,7 +6,6 @@ import { User } from './users.model';
 import { constants } from 'src/constants';
 var jwt = require('jsonwebtoken');
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -14,26 +13,28 @@ export class UsersService {
     @Inject('winston') private readonly logger: Logger,
   ) {}
 
-  async register(username, password,req) {
+  async register(username, password, req) {
     let host = req.body.host;
     try {
-      let findUser = await this.um.findOne({ username ,host}).exec();
+      let findUser = await this.um.findOne({ username, host }).exec();
       if (!findUser) {
         try {
           let data = {
             username,
             password,
-            host
+            host,
           };
           const newUser = new this.um(data);
           let res = await newUser.save();
-          
+
           if (res) {
             return await this.generateToken(username, password);
-          }
-          else {
+          } else {
             this.log('error', 'UsersService -> save() in -> else res');
-            throw new HttpException('Problem with saving the user', HttpStatus.FORBIDDEN);
+            throw new HttpException(
+              'Problem with saving the user',
+              HttpStatus.FORBIDDEN,
+            );
           }
         } catch (error) {
           this.log('error', `UsersService -> save() => ${error}`);
@@ -43,7 +44,10 @@ export class UsersService {
           );
         }
       } else {
-        this.log('error', 'UsersService -> findOne() in -> user already exist!');
+        this.log(
+          'error',
+          'UsersService -> findOne() in -> user already exist!',
+        );
         return new HttpException('user already exist!', HttpStatus.FORBIDDEN);
       }
     } catch (error) {
@@ -52,25 +56,52 @@ export class UsersService {
     }
   }
 
-
-
-  async validateUser(username: string, password: string,req) {
+  async validateUser(username: string, password: string, req) {
     let host = req.body.host;
-    const user = await this.um.findOne({ username,host }).exec();
+    const user = await this.um.findOne({ username, host }).exec();
     if (user !== null) {
-      if (password === user.password)  return this.generateToken(username, password);
+      if (password === user.password)
+        return this.generateToken(username, password);
       else {
         return new HttpException('password incorrect', HttpStatus.FORBIDDEN);
       }
     } else {
-       return new HttpException('no such user', HttpStatus.FORBIDDEN);
+      return new HttpException('no such user', HttpStatus.FORBIDDEN);
     }
   }
 
+  async validateGoogleUser(username: string, req) {
+    let host = req.body.host;
+    let data = {
+      username,
+      password:"123",
+      host,
+    };
+    //todo - generate password and send to email
+    const user = await this.um.findOne({ username, host }).exec();
+    if (!user) {
+      try {
+        const newUser = new this.um(data);
+        await newUser.save();
+      } catch(error){
+        this.log(
+          'error',
+          `UsersService -> validateGoogleUser() => ${error}`,
+        );
+        throw new HttpException(
+          'Problem with saving the user validateGoogleUser',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    }
+    return this.generateToken(username, data.password);
+  }
 
   async generateToken(username: string, password: string) {
     return {
-      idToken: jwt.sign({ username, password },constants.jwtSecret,{expiresIn: '1h' })
+      idToken: jwt.sign({ username, password }, constants.jwtSecret, {
+        expiresIn: '1h',
+      }),
     };
   }
 

@@ -19,6 +19,12 @@ export class UsersController {
     req.body.host = host;
     return await this.us.validateUser(username,password,req);
   }
+  @Post('validateGoogleUser')
+  async validateGoogleUser(@Body('username') username: string,@Req() req) {
+    let host = req.headers.host.split(":")[0];
+    req.body.host = host;
+    return await this.us.validateGoogleUser(username,req);
+  }
   @Post('generateToken')
   async generateToken(@Body('username') username: string,@Body('password') password: string) {
     return await this.us.generateToken(username,password);

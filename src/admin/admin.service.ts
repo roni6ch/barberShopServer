@@ -36,13 +36,12 @@ export class AdminService {
   async checkPermissions(token: Admin,req) {
     let host = req.body.host;
     try {
-      return jwt.verify(token.username, constants.jwtSecret, async (err, decoded) => {
         let owner = SETTINGS.owners.filter((v,i)=>{
           return v.calendar.website === host;
         });
         if (owner.length > 0)
-          if (decoded.username.toLowerCase() === owner[0].calendar.mail.toLowerCase()) {
-            let res = await this.am.find({ username: decoded.username });
+          if (token.username.toLowerCase() === owner[0].calendar.mail.toLowerCase()) {
+            let res = await this.am.find({ username: token.username });
             if (res.length > 0) return true;
             else {
               this.log(
@@ -54,7 +53,6 @@ export class AdminService {
         }else{
           return false; //not an admin
         }
-      });
     } catch (error) {
       this.log('error', `AdminService -> checkPermissions() => ${error}`);
       return new HttpException(

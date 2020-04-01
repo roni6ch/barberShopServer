@@ -31,21 +31,18 @@ export class DataService {
     let owner = SETTINGS.owners.filter((v, i) => {
       return v.calendar.website === host;
     });
-    console.log('host', host);
 
     if (owner.length > 0) {
       for (let i = 0; i < owner[0].calendar.days * 2; i++) {
         let date = moment(weekStart).add(i, 'days');
         calendar.push((+new Date(+date)).toString());
       }
-      console.log(calendar);
       
       try {
         let res = await this.dm
           .find({ host })
          // .where('dayTimestamp').in(calendar)
           .exec();
-        console.log(res);
         if (res) return res;
         else {
           this.log('error', 'DataService -> getData() in -> else res');

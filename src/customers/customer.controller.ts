@@ -104,7 +104,21 @@ export class CustomerController {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
-
+  @Get('userTreatments')
+  async userTreatments(@Req() req): Promise<any> {
+    try {
+      let res = await this.cs.userTreatments(req);
+      if (res) return res;
+          else {
+            this.log('error','CustomerController -> userTreatments() in -> else res');
+            return false;
+          }
+    }
+    catch (error) {
+    this.log('error',`CustomerController -> userTreatments() => ${error}`);
+    throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+  }
+  }
   log(type, data) {
     console.error(data);
     this.logger.log(type, data);

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Customer } from './customer.model';
 import { Logger } from 'winston';
+import * as moment from 'moment';
 
 @Injectable()
 export class CustomersService {
@@ -23,8 +24,8 @@ export class CustomersService {
   }
 
   async addTreatment(customer,req) {
-    let host = req.body.host;
-    customer.host = host;
+    customer.host = req.body.host;
+    customer.username = req.body.username;
     const newTreatment = new this.cm(customer);
     try {
       let res = await newTreatment.save();
@@ -53,6 +54,25 @@ export class CustomersService {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
+
+
+  async userTreatments(req) {
+    let host = req.body.host;
+    let username = req.body.username;
+    try {
+      let res = await this.cm.find({host,username,date: { $gte:+moment().subtract(1,'days').endOf('day')} }).exec();
+      console.log(res);
+      if (res) return res;
+      else {
+        this.log('error','CustomersService -> userTreatments() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error',`CustomersService -> userTreatments() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
+  }
+  
 
   log(type, data) {
     console.error(data);
