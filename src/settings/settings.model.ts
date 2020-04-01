@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 export const SettingsSchema = new mongoose.Schema({
-  callendar: { type: {} },
+  calendar: { type: {} },
   owner: { type: {} },
   treatments: { type: Array },
   mail: { type: {} },
@@ -9,7 +9,7 @@ export const SettingsSchema = new mongoose.Schema({
 }, { collection: 'settings' })
 
 export interface Settings extends mongoose.Document {
-  callendar: Calendar;
+  calendar: Calendar;
   owner: Owner;
   treatments: string[];
   mail: string;

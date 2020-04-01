@@ -1,3 +1,4 @@
+import { SettingsService } from 'src/settings/settings.service';
 
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
@@ -6,6 +7,7 @@ import { CustomerSchema } from 'src/customers/customer.model';
 import { AdminSchema } from './admin.model';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
+import { SettingsSchema } from 'src/settings/settings.model';
 
 
 
@@ -13,9 +15,10 @@ import { AdminService } from './admin.service';
   imports: [
     MongooseModule.forFeature([{name:'Admin',schema:AdminSchema}]),
     MongooseModule.forFeature([{name:'Customer',schema:CustomerSchema}]),
+    MongooseModule.forFeature([{name:'Settings',schema:SettingsSchema}]),
     MongooseModule.forFeature([{name:'Data',schema:DataSchema}])
  ],
   controllers: [AdminController],
-  providers: [AdminService]
+  providers: [AdminService,SettingsService]
 })
 export class AdminModule {}

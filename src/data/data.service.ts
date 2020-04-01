@@ -1,3 +1,4 @@
+import { SettingsService } from './../settings/settings.service';
 import { constants } from 'src/constants';
 import { Data } from './data.model';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,6 +22,7 @@ export class DataService {
   constructor(
     @InjectModel('Data') private readonly dm: Model<Data>,
     @Inject('winston') private readonly logger: Logger,
+    private s: SettingsService,
   ) {}
 
   async getData(req) {
@@ -28,12 +30,9 @@ export class DataService {
     let calendar = [];
     var weekStart = moment().clone().startOf('week');
 
-    let owner = SETTINGS.owners.filter((v, i) => {
-      return v.calendar.website === host;
-    });
-
-    if (owner.length > 0) {
-      for (let i = 0; i < owner[0].calendar.days * 2; i++) {
+    let res = await this.s.getSettingsFromDB(req);
+    if (res) {
+      for (let i = 0; i < res.calendar.days * 2; i++) {
         let date = moment(weekStart).add(i, 'days');
         calendar.push((+new Date(+date)).toString());
       }
@@ -155,14 +154,12 @@ export class DataService {
     //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
 
     try {
-      let ownerMail = SETTINGS.owners.filter((v, i) => {
-        return v.calendar.website === host;
-      });
-      if (ownerMail.length > 0) {
+      let resSettings = await this.s.getSettingsFromDB(req);
+      if (resSettings) {
         const message = {
           from: contact.mail,
-          to: ownerMail[0].calendar.mail,
-          subject: ownerMail[0].mail.subject + contact.name,
+          to: resSettings.calendar.mail,
+          subject: resSettings.mail.subject + contact.name,
           text: contact.message + ' from: ' + contact.phone,
         };
         let res = await transporter.sendMail(message);
@@ -188,13 +185,11 @@ export class DataService {
     let host = req.body.host;
     console.log('new day -> create one');
     let hours = [];
-    let owner = SETTINGS.owners.filter((v, i) => {
-      return v.calendar.website === host;
-    });
-    if (owner.length > 0) {
+    let resSettings = await this.s.getSettingsFromDB(req);
+    if (resSettings) {
       for (
-        let h = owner[0].calendar.hours[0];
-        h < owner[0].calendar.hours[1];
+        let h = resSettings.calendar.hours[0];
+        h < resSettings.calendar.hours[1];
 
       ) {
         hours.push({

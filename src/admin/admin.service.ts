@@ -7,6 +7,7 @@ import { Customer } from 'src/customers/customer.model';
 import { Admin } from './admin.model';
 import { constants } from 'src/constants';
 import * as SETTINGS from './../settings/settings.json';
+import { SettingsService } from 'src/settings/settings.service';
 var jwt = require('jsonwebtoken');
 
 @Injectable()
@@ -16,6 +17,7 @@ export class AdminService {
     @InjectModel('Customer') private readonly cm: Model<Customer>,
     @InjectModel('Data') private readonly dm: Model<Data>,
     @Inject('winston') private readonly logger: Logger,
+    private s: SettingsService,
   ) {}
 
   async getMyTreatments(req): Promise<boolean | PromiseLike<boolean>> {
@@ -36,11 +38,9 @@ export class AdminService {
   async checkPermissions(token: Admin,req) {
     let host = req.body.host;
     try {
-        let owner = SETTINGS.owners.filter((v,i)=>{
-          return v.calendar.website === host;
-        });
-        if (owner.length > 0)
-          if (token.username.toLowerCase() === owner[0].calendar.mail.toLowerCase()) {
+    let res = await this.s.getSettingsFromDB(req);
+        if (res)
+          if (token.username.toLowerCase() === res.calendar.mail.toLowerCase()) {
             let res = await this.am.find({ username: token.username });
             if (res.length > 0) return true;
             else {

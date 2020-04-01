@@ -8,13 +8,7 @@ import { Response } from 'express';
 export class SettingsController {
   constructor(private settingsService : SettingsService) {
   }
-
   @Get()
-  async getSettings(@Res() res: Response,@Req() req){
-    //no longer activated - nor settings.json
-    return await this.settingsService.getSettings(res,req); 
-  }
-  @Get('getSettingsFromDB')
   async getSettingsFromDB(@Req() req) : Promise<any>{
     return await this.settingsService.getSettingsFromDB(req); 
   }

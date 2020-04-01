@@ -7,29 +7,20 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class SettingsService {
+  settings : Settings = null;
   constructor(
     @InjectModel('Settings') private readonly sm: Model<Settings>,
     @Inject('winston') private readonly logger: Logger,
   ) {}
 
-  @Get()
-  getSettings(@Res() res: Response, @Req() req): any {
-    let host = req.body.host;
-    let owner = SETTINGS.owners.filter((v, i) => {
-      return v.calendar.website === host;
-    });
-
-    if (owner.length > 0) {
-      res.status(HttpStatus.OK).json(owner[0]);
-    } else {
-      res.status(HttpStatus.FORBIDDEN);
-    }
-  }
   async getSettingsFromDB(req) {
+    if (this.settings !== null){
+      return this.settings;
+    }
     let host = req.headers.origin;
     try {
       let res = await this.sm.findOne({ 'calendar.website' : host }).exec();
-      if (res) {console.log(res);return res;}
+      if (res) {this.settings = res;return res;}
       else {
         this.log('error', 'DataService -> getData() in -> else res');
         return false;

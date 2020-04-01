@@ -4,13 +4,25 @@ import { Model } from 'mongoose';
 import { Logger } from 'winston';
 import { User } from './users.model';
 import { constants } from 'src/constants';
+var nodemailer = require('nodemailer');
+import { SettingsService } from 'src/settings/settings.service';
 var jwt = require('jsonwebtoken');
+
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: constants.mail.mail,
+    pass: constants.mail.pass,
+  },
+});
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel('Users') private readonly um: Model<User>,
     @Inject('winston') private readonly logger: Logger,
+    private s: SettingsService
   ) {}
 
   async register(username, password, req) {
@@ -72,17 +84,18 @@ export class UsersService {
 
   async validateGoogleUser(username: string, req) {
     let host = req.body.host;
+    let password = Math.random().toString(36).slice(-8);
     let data = {
       username,
-      password:"123",
+      password, //password generator
       host,
     };
-    //todo - generate password and send to email
     const user = await this.um.findOne({ username, host }).exec();
     if (!user) {
       try {
         const newUser = new this.um(data);
         await newUser.save();
+        await this.sendEmailPassword(username,password,req);
       } catch(error){
         this.log(
           'error',
@@ -95,6 +108,37 @@ export class UsersService {
       }
     }
     return this.generateToken(username, data.password);
+  }
+
+  async sendEmailPassword(contact,password, req) {
+    let host = req.body.host;
+    try {
+      let resSettings = await this.s.getSettingsFromDB(req);
+      if (resSettings) {
+        const message = {
+          from: resSettings.calendar.mail,
+          to: contact,
+          subject: 'Message from: ' + resSettings.calendar.website,
+          text: "Please keep your password: " + password + 'for user: ' + contact + ' or login with google Button :)',
+        };
+        let res = await transporter.sendMail(message);
+        if (res) {
+          console.log('Email succsess!');
+          return true;
+        } else {
+          this.log('error', 'UsersService -> sendEmailPassword() in -> else res');
+          return false;
+        }
+      } else {
+        this.log('error', `UsersService -> sendEmailPassword() => no owner mail`);
+      }
+    } catch (error) {
+      this.log('error', `UsersService -> sendEmailPassword() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
   }
 
   async generateToken(username: string, password: string) {
