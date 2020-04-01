@@ -35,6 +35,20 @@ export class DataController {
       this.log('error',`DataController -> sendContact() => ${error}`);
     }
   }
+  @Post('updateAdmin')
+  async updateAdmin(@Body() adminDetails,@Req() req){
+    try {
+      let res = await this.dataService.updateAdmin(adminDetails,req);
+      if (res) return true;
+      else {
+        this.log('error','DataController -> updateAdmin() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error',`DataController -> updateAdmin() => ${error}`);
+    }
+  }
+  
 
   log(type,data){
     console.error(data);

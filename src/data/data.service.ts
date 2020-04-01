@@ -9,6 +9,8 @@ import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
 import { Inject, HttpException, HttpStatus, Req } from '@nestjs/common';
+import { Admin } from 'src/admin/admin.model';
+import { Settings } from 'src/settings/settings.model';
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -20,6 +22,7 @@ var transporter = nodemailer.createTransport({
 
 export class DataService {
   constructor(
+    @InjectModel('Settings') private readonly sm: Model<Settings>,
     @InjectModel('Data') private readonly dm: Model<Data>,
     @Inject('winston') private readonly logger: Logger,
     private s: SettingsService,
@@ -28,7 +31,9 @@ export class DataService {
   async getData(req) {
     let host = req.body.host;
     let calendar = [];
-    var weekStart = moment().clone().startOf('week');
+    var weekStart = moment()
+      .clone()
+      .startOf('week');
 
     let res = await this.s.getSettingsFromDB(req);
     if (res) {
@@ -36,11 +41,11 @@ export class DataService {
         let date = moment(weekStart).add(i, 'days');
         calendar.push((+new Date(+date)).toString());
       }
-      
+
       try {
         let res = await this.dm
           .find({ host })
-         // .where('dayTimestamp').in(calendar)
+          // .where('dayTimestamp').in(calendar)
           .exec();
         if (res) return res;
         else {
@@ -223,6 +228,28 @@ export class DataService {
           HttpStatus.EXPECTATION_FAILED,
         );
       }
+    }
+  }
+
+  async updateAdmin(adminDetails, req) {
+    let host = req.body.host;
+    try {
+      let result = await this.sm
+        .updateOne({  'calendar.website' : host }, { 'calendar.location' : adminDetails.location ,'owner.phone' : adminDetails.phone  })
+        .exec();
+        console.log(result);
+      if (result.n === 1) {
+        return result;
+      } else {
+        this.log('error', 'DataService -> updateAdmin() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `DataService -> updateAdmin() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
     }
   }
   log(type, data) {
