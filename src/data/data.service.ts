@@ -240,7 +240,7 @@ export class DataService {
           'owner.phone' : adminDetails.phone,
           'calendar.daysOff' : adminDetails.daysOff,
           'calendar.hours' : adminDetails.hours,
-          'calendar.days' : adminDetails.days,
+          'calendar.slides' : adminDetails.slides,
           'treatments' : adminDetails.treatments   })
         .exec();
       if (result.n === 1) {
