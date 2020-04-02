@@ -49,6 +49,10 @@ export class DataController {
     }
   }
   
+  @Get('userDetails')
+  async userDetails(@Req() req) {
+    return await this.dataService.userDetails(req);
+  }
 
   log(type,data){
     console.error(data);

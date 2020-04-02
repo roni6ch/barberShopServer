@@ -22,6 +22,7 @@ var transporter = nodemailer.createTransport({
 export class DataService {
   constructor(
     @InjectModel('Settings') private readonly sm: Model<Settings>,
+    @InjectModel('Customer') private readonly cm: Model<Customer>,
     @InjectModel('Data') private readonly dm: Model<Data>,
     @Inject('winston') private readonly logger: Logger,
     private s: SettingsService,
@@ -254,6 +255,26 @@ export class DataService {
       return new HttpException(
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async userDetails(req) {
+    let host = req.body.host;
+    let username = req.body.username;
+    try {
+      const user = await this.cm.findOne({ username, host }, { _id:0 ,id:0, date:0,dateStr:0,hour:0}).exec();
+      if (user) {
+        return user;
+      }
+      else{
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `UsersService -> validateGoogleUser() => ${error}`);
+      throw new HttpException(
+        'Problem with saving the user validateGoogleUser',
+        HttpStatus.FORBIDDEN,
       );
     }
   }

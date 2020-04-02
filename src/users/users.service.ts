@@ -6,8 +6,8 @@ import { User } from './users.model';
 import { constants } from 'src/constants';
 var nodemailer = require('nodemailer');
 import { SettingsService } from 'src/settings/settings.service';
+import { Customer } from 'src/customers/customer.model';
 var jwt = require('jsonwebtoken');
-
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -22,11 +22,12 @@ export class UsersService {
   constructor(
     @InjectModel('Users') private readonly um: Model<User>,
     @Inject('winston') private readonly logger: Logger,
-    private s: SettingsService
+    private s: SettingsService,
   ) {}
 
   async register(username, password, req) {
     let host = req.body.host;
+    username = username.toLowerCase();
     try {
       let findUser = await this.um.findOne({ username, host }).exec();
       if (!findUser) {
@@ -70,6 +71,7 @@ export class UsersService {
 
   async validateUser(username: string, password: string, req) {
     let host = req.body.host;
+    username = username.toLowerCase();
     const user = await this.um.findOne({ username, host }).exec();
     if (user !== null) {
       if (password === user.password)
@@ -84,7 +86,10 @@ export class UsersService {
 
   async validateGoogleUser(username: string, req) {
     let host = req.body.host;
-    let password = Math.random().toString(36).slice(-8);
+    username = username.toLowerCase();
+    let password = Math.random()
+      .toString(36)
+      .slice(-8);
     let data = {
       username,
       password, //password generator
@@ -95,12 +100,9 @@ export class UsersService {
       try {
         const newUser = new this.um(data);
         await newUser.save();
-        await this.sendEmailPassword(username,password,req);
-      } catch(error){
-        this.log(
-          'error',
-          `UsersService -> validateGoogleUser() => ${error}`,
-        );
+        await this.sendEmailPassword(username, password, req);
+      } catch (error) {
+        this.log('error', `UsersService -> validateGoogleUser() => ${error}`);
         throw new HttpException(
           'Problem with saving the user validateGoogleUser',
           HttpStatus.FORBIDDEN,
@@ -110,7 +112,7 @@ export class UsersService {
     return this.generateToken(username, data.password);
   }
 
-  async sendEmailPassword(contact,password, req) {
+  async sendEmailPassword(contact, password, req) {
     let host = req.body.host;
     try {
       let resSettings = await this.s.getSettingsFromDB(req);
@@ -119,18 +121,29 @@ export class UsersService {
           from: resSettings.calendar.mail,
           to: contact,
           subject: 'Message from: ' + resSettings.calendar.website,
-          text: "Please keep your password: " + password + 'for user: ' + contact + ' or login with google Button :)',
+          text:
+            'Please keep your password: ' +
+            password +
+            'for user: ' +
+            contact +
+            ' or login with google Button :)',
         };
         let res = await transporter.sendMail(message);
         if (res) {
           console.log('Email succsess!');
           return true;
         } else {
-          this.log('error', 'UsersService -> sendEmailPassword() in -> else res');
+          this.log(
+            'error',
+            'UsersService -> sendEmailPassword() in -> else res',
+          );
           return false;
         }
       } else {
-        this.log('error', `UsersService -> sendEmailPassword() => no owner mail`);
+        this.log(
+          'error',
+          `UsersService -> sendEmailPassword() => no owner mail`,
+        );
       }
     } catch (error) {
       this.log('error', `UsersService -> sendEmailPassword() => ${error}`);
@@ -147,6 +160,23 @@ export class UsersService {
         expiresIn: '1h',
       }),
     };
+  }
+  async forgotPassword(username, req) {
+    let host = req.body.host;
+    try {
+      const user = await this.um.findOne({ username, host }).exec();
+      if (user !== null) {
+        await this.sendEmailPassword(username, user.password, req);
+      } else {
+        return new HttpException('no such user', HttpStatus.FORBIDDEN);
+      }
+    }catch(error){
+      this.log('error', `UsersService -> forgotPassword() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
   }
 
   log(type, data) {

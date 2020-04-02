@@ -6,6 +6,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { SettingsService } from 'src/settings/settings.service';
 import { SettingsSchema } from 'src/settings/settings.model';
+import { CustomerSchema } from 'src/customers/customer.model';
 
 
 

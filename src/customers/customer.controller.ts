@@ -30,9 +30,11 @@ export class CustomerController {
           let res = await this.cs.deleteAllDocuments();
           if (res) {
             return res;
-          }
-          else {
-            this.log('error','CustomerController -> cs deleteAllDocuments() in -> else res');
+          } else {
+            this.log(
+              'error',
+              'CustomerController -> cs deleteAllDocuments() in -> else res',
+            );
             return false;
           }
         } catch (error) {
@@ -40,67 +42,89 @@ export class CustomerController {
             'error',
             `CustomerController -> cs deleteAllDocuments() => ${error}`,
           );
-          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+          throw new HttpException(
+            'ExceptionFailed',
+            HttpStatus.EXPECTATION_FAILED,
+          );
         }
-      }else{
-        this.log('error','CustomerController -> ds deleteAllDocuments() in -> else res');
+      } else {
+        this.log(
+          'error',
+          'CustomerController -> ds deleteAllDocuments() in -> else res',
+        );
         return false;
       }
     } catch (error) {
-      this.log('error', `CustomerController -> ds deleteAllDocuments() => ${error}`);
+      this.log(
+        'error',
+        `CustomerController -> ds deleteAllDocuments() => ${error}`,
+      );
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
 
   @Post()
-  async addTreatment(@Body() customer: Customer,@Req() req): Promise<boolean> {
+  async addTreatment(@Body() customer: Customer, @Req() req): Promise<boolean> {
     try {
-      let res = await this.ds.setHour(customer,req);
+      let res = await this.ds.setHour(customer, req);
       if (res) {
         try {
-          let res = await this.cs.addTreatment(customer,req);
+          let res = await this.cs.addTreatment(customer, req);
           if (res) return res;
           else {
-            this.log('error','CustomerController -> addTreatment() in -> else res');
+            this.log(
+              'error',
+              'CustomerController -> addTreatment() in -> else res',
+            );
             return false;
           }
         } catch (error) {
-          this.log('error',`CustomerController -> addTreatment() => ${error}`);
-          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+          this.log('error', `CustomerController -> addTreatment() => ${error}`);
+          throw new HttpException(
+            'ExceptionFailed',
+            HttpStatus.EXPECTATION_FAILED,
+          );
         }
-      }
-      else {
-        this.log('error','CustomerController -> setHour() in -> else res');
+      } else {
+        this.log('error', 'CustomerController -> setHour() in -> else res');
         return false;
       }
     } catch (error) {
-      this.log('error',`CustomerController -> setHour() => ${error}`);
+      this.log('error', `CustomerController -> setHour() => ${error}`);
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
   @Post('deleteTreatment')
-  async deleteTreatment(@Body() customer: Customer,@Req() req): Promise<any> {
+  async deleteTreatment(@Body() customer: Customer, @Req() req): Promise<any> {
     try {
-      let res = await this.ds.deleteHour(customer,req);
+      let res = await this.ds.deleteHour(customer, req);
       if (res) {
         try {
-          let res = await this.cs.deleteTreatment(customer,req);
+          let res = await this.cs.deleteTreatment(customer, req);
           if (res) return res;
           else {
-            this.log('error','CustomerController -> deleteTreatment() in -> else res');
+            this.log(
+              'error',
+              'CustomerController -> deleteTreatment() in -> else res',
+            );
             return false;
           }
         } catch (error) {
-          this.log('error',`CustomerController -> deleteTreatment() => ${error}`);
-          throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+          this.log(
+            'error',
+            `CustomerController -> deleteTreatment() => ${error}`,
+          );
+          throw new HttpException(
+            'ExceptionFailed',
+            HttpStatus.EXPECTATION_FAILED,
+          );
         }
-      }
-      else {
-        this.log('error','CustomerController -> deleteHour() in -> else res');
+      } else {
+        this.log('error', 'CustomerController -> deleteHour() in -> else res');
         return false;
       }
     } catch (error) {
-      this.log('error',`CustomerController -> deleteHour() => ${error}`);
+      this.log('error', `CustomerController -> deleteHour() => ${error}`);
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
@@ -109,15 +133,17 @@ export class CustomerController {
     try {
       let res = await this.cs.userTreatments(req);
       if (res) return res;
-          else {
-            this.log('error','CustomerController -> userTreatments() in -> else res');
-            return false;
-          }
+      else {
+        this.log(
+          'error',
+          'CustomerController -> userTreatments() in -> else res',
+        );
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `CustomerController -> userTreatments() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
-    catch (error) {
-    this.log('error',`CustomerController -> userTreatments() => ${error}`);
-    throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
-  }
   }
   log(type, data) {
     console.error(data);
