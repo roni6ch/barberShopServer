@@ -1,5 +1,4 @@
 import { Injectable, Res, HttpStatus, Get, Req, HttpException, Logger, Inject } from '@nestjs/common';
-import * as SETTINGS from './settings.json';
 import { Response } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Settings } from './settings.model';

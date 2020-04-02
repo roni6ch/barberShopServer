@@ -4,7 +4,6 @@ import { Data } from './data.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as moment from 'moment';
-import * as SETTINGS from '../settings/settings.json';
 import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
@@ -37,7 +36,7 @@ export class DataService {
 
     let res = await this.s.getSettingsFromDB(req);
     if (res) {
-      for (let i = 0; i < res.calendar.days * 2; i++) {
+      for (let i = 0; i < res.calendar.slides * 14; i++) {
         let date = moment(weekStart).add(i, 'days');
         calendar.push((+new Date(+date)).toString());
       }
@@ -233,11 +232,17 @@ export class DataService {
 
   async updateAdmin(adminDetails, req) {
     let host = req.body.host;
+    console.log(adminDetails);
     try {
       let result = await this.sm
-        .updateOne({  'calendar.website' : host }, { 'calendar.location' : adminDetails.location ,'owner.phone' : adminDetails.phone  })
+        .updateOne({  'calendar.website' : host },
+        { 'calendar.location' : adminDetails.location ,
+          'owner.phone' : adminDetails.phone,
+          'calendar.daysOff' : adminDetails.daysOff,
+          'calendar.hours' : adminDetails.hours,
+          'calendar.days' : adminDetails.days,
+          'treatments' : adminDetails.treatments   })
         .exec();
-        console.log(result);
       if (result.n === 1) {
         return result;
       } else {

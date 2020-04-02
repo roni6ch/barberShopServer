@@ -6,7 +6,6 @@ import { Logger } from 'winston';
 import { Customer } from 'src/customers/customer.model';
 import { Admin } from './admin.model';
 import { constants } from 'src/constants';
-import * as SETTINGS from './../settings/settings.json';
 import { SettingsService } from 'src/settings/settings.service';
 var jwt = require('jsonwebtoken');
 
