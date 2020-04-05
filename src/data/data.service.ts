@@ -242,7 +242,9 @@ export class DataService {
           'calendar.daysOff' : adminDetails.daysOff,
           'calendar.hours' : adminDetails.hours,
           'calendar.slides' : adminDetails.slides,
-          'treatments' : adminDetails.treatments   })
+          'treatments' : adminDetails.treatments,
+          'galleryDisplay':adminDetails.galleryDisplay
+           })
         .exec();
       if (result.n === 1) {
         return result;

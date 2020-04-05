@@ -19,6 +19,7 @@ export class SettingsService {
     let host = req.headers.origin;
     try {
       let res = await this.sm.findOne({ 'calendar.website' : host }).exec();
+      console.log('res',res);
       if (res) {this.settings = res;return res;}
       else {
         this.log('error', 'DataService -> getData() in -> else res');
