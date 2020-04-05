@@ -1,3 +1,4 @@
+import { CustomersService } from './customers/customers.service';
 import { DataController } from './data/data.controller';
 import { AdminController } from './admin/admin.controller';
 import { HttpMiddleware } from './http.middleware';

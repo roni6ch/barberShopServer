@@ -20,8 +20,8 @@ export class CustomerController {
     private cs: CustomersService,
     private ds: DataService,
     @Inject('winston') private readonly logger: Logger,
-  ) {}
-
+  ) {
+  }
   @Delete('deleteAllDocuments')
   async deleteAllDocuments(): Promise<boolean> {
     try {

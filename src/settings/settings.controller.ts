@@ -1,7 +1,6 @@
 
-import { Controller, Get, Post, Body, Res, Req } from "@nestjs/common";
+import { Controller, Get, Req } from "@nestjs/common";
 import { SettingsService } from "./settings.service";
-import { Response } from 'express';
 
 
 @Controller('settings')

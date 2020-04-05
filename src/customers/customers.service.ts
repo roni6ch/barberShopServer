@@ -9,6 +9,19 @@ import * as moment from 'moment';
 export class CustomersService {
   constructor(@InjectModel('Customer') private readonly cm: Model<Customer>, @Inject('winston') private readonly logger: Logger) {}
   
+  async deleteOldDocuments(oldMonth){
+    try {
+      let res = await this.cm.deleteMany({"date" : { $lt : oldMonth }});
+      if (res) return res;
+      else {
+        this.log('error','CustomersService -> delete() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error',`CustomersService -> deleteOldDocuments() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
+  }
   async deleteAllDocuments() {
     try {
       let res = await this.cm.deleteMany();

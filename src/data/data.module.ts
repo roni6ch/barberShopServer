@@ -1,3 +1,4 @@
+import { CustomersService } from './../customers/customers.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DataController } from './data.controller';
 import { Module } from '@nestjs/common';
@@ -14,6 +15,6 @@ import { CustomerSchema } from 'src/customers/customer.model';
     MongooseModule.forFeature([{name:'Settings',schema:SettingsSchema}]),
  ],
   controllers: [DataController],
-  providers: [DataService,SettingsService]
+  providers: [DataService,SettingsService,CustomersService]
 })
 export class DataModule {}

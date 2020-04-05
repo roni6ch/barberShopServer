@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { InjectModel } from '@nestjs/mongoose';
 import { Settings } from './settings.model';
 import { Model } from 'mongoose';
+import { CustomersService } from 'src/customers/customers.service';
 
 @Injectable()
 export class SettingsService {
@@ -10,7 +11,8 @@ export class SettingsService {
   constructor(
     @InjectModel('Settings') private readonly sm: Model<Settings>,
     @Inject('winston') private readonly logger: Logger,
-  ) {}
+  ) {
+  }
 
   async getSettingsFromDB(req) {
     if (this.settings !== null){
@@ -19,7 +21,6 @@ export class SettingsService {
     let host = req.headers.origin;
     try {
       let res = await this.sm.findOne({ 'calendar.website' : host }).exec();
-      console.log('res',res);
       if (res) {this.settings = res;return res;}
       else {
         this.log('error', 'DataService -> getData() in -> else res');

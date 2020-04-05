@@ -1,13 +1,17 @@
-import { Controller, Get, Post, Body, Inject, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Inject, Req, Delete } from '@nestjs/common';
 import { DataService } from './data.service';
 import { Logger } from 'winston';
+import * as moment from 'moment';
+import { CustomersService } from 'src/customers/customers.service';
 
 @Controller('data')
 export class DataController {
   constructor(
     private dataService: DataService,
+    private customerService: CustomersService,
     @Inject('winston') private readonly logger: Logger,
-  ) {}
+  ) {
+  }
 
   @Get()
   async getData(@Req() req) {
@@ -52,6 +56,15 @@ export class DataController {
   @Get('userDetails')
   async userDetails(@Req() req) {
     return await this.dataService.userDetails(req);
+  }
+
+
+  @Delete('deleteOldMonthsFromDB')
+  async deleteOldMonthsFromDB() {
+    const oldMonths = +moment().subtract(2,'months').endOf('month');
+    await this.dataService.deleteOldDocuments(oldMonths);
+    await this.customerService.deleteOldDocuments(oldMonths);
+    return true;
   }
 
   log(type,data){
