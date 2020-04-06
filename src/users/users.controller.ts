@@ -35,6 +35,13 @@ export class UsersController {
     req.body.host = host;
     return await this.us.forgotPassword(username,req);
   }
+  @Post('changePassword')
+  async changePassword(@Req() req) {
+    let host = req.headers.host.split(":")[0];
+    req.body.host = host;
+    return await this.us.changePassword(req);
+  }
+  
   
   
 

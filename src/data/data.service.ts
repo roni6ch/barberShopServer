@@ -260,7 +260,8 @@ export class DataService {
           'calendar.hours' : adminDetails.hours,
           'calendar.slides' : adminDetails.slides,
           'treatments' : adminDetails.treatments,
-          'galleryDisplay':adminDetails.galleryDisplay
+          'galleryDisplay':adminDetails.galleryDisplay,
+          'personals':adminDetails.personals
            })
         .exec();
       if (result.n === 1) {

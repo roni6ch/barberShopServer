@@ -179,6 +179,30 @@ export class UsersService {
     }
   }
 
+  async changePassword(req) {
+    let host = req.body.host;
+    let username = req.body.username;
+    let password = req.body.password;
+    let newPassword = req.body.newpassword;
+    try {
+      const res = await this.um.findOneAndUpdate({ username,password, host },{password:newPassword}).exec();
+      if (res !== null) {
+        await this.sendEmailPassword(username, newPassword, req);
+        return true;
+      } else {
+        return false;
+      }
+    }catch(error){
+      this.log('error', `UsersService -> forgotPassword() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  
+
   log(type, data) {
     console.error(data);
     this.logger.log(type, data);

@@ -7,7 +7,8 @@ export const SettingsSchema = new mongoose.Schema({
   mail: { type: {} },
   gallery: { type: Array },
   galleryDisplay : { type: String },
-  instagramLink : { type: String }
+  instagramLink : { type: String },
+  personals : { type: Array }
 }, { collection: 'settings' })
 
 export interface Settings extends mongoose.Document {
@@ -18,6 +19,7 @@ export interface Settings extends mongoose.Document {
   gallery: string[];
   galleryDisplay : string;
   instagramLink : string;
+  personals: Personal[];
 }
 
 export interface Calendar {
@@ -38,4 +40,9 @@ export interface Owner {
 
 export interface Mail {
   subject: string;
+}
+
+export interface Personal {
+  personal: string;
+  active: boolean;
 }
