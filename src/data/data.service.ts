@@ -44,7 +44,7 @@ export class DataService {
 
       try {
         let res = await this.dm
-          .find({ host })
+          .find({ host ,dayTimestamp: { $gte:+moment().subtract(0,'days').endOf('day')}  })
           // .where('dayTimestamp').in(calendar)
           .exec();
         if (res) return res;
