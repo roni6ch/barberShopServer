@@ -8,6 +8,8 @@ import { Admin } from './admin.model';
 import { constants } from 'src/constants';
 import { SettingsService } from 'src/settings/settings.service';
 var jwt = require('jsonwebtoken');
+import * as moment from 'moment';
+
 
 @Injectable()
 export class AdminService {
@@ -22,7 +24,7 @@ export class AdminService {
   async getMyTreatments(req): Promise<boolean | PromiseLike<boolean>> {
     let host = req.body.host;
     try {
-      let res = await this.cm.find({host});
+      let res = await this.cm.find({host,date: { $gte:+moment().subtract(0,'days').endOf('day')} });
       if (res) return res;
       else {
         this.log('error', 'AdminService -> getMyTreatments() in -> else res');
