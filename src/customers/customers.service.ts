@@ -73,7 +73,7 @@ export class CustomersService {
     let host = req.body.host;
     let username = req.body.username;
     try {
-      let res = await this.cm.find({host,username,date: { $gte:+moment().subtract(1,'days').endOf('day')} }).exec();
+      let res = await this.cm.find({host,username,date: { $gte:+moment().subtract(0,'days').endOf('day')} }).exec();
       if (res) return res;
       else {
         this.log('error','CustomersService -> userTreatments() in -> else res');
@@ -84,6 +84,24 @@ export class CustomersService {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
+
+  async userTreatmentsOld(req) {
+    let host = req.body.host;
+    let username = req.body.username;
+    try {
+      let res = await this.cm.find({host,username,date: { $lte:+moment().subtract(0,'days').endOf('day')} }).exec();
+      if (res) return res;
+      else {
+        this.log('error','CustomersService -> userTreatments() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error',`CustomersService -> userTreatments() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
+  }
+
+  
   
 
   log(type, data) {
