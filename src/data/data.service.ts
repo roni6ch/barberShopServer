@@ -208,19 +208,22 @@ export class DataService {
     console.log('new day -> create one');
     let hours = [];
     let resSettings = await this.s.getSettingsFromDB(req);
+    console.log(data);
+    
+    let hoursSettings = resSettings.calendar.days[moment(+data.date).day() % 7].hours;
     if (resSettings) {
       for (
-        let h = resSettings.calendar.hours[0];
-        h < resSettings.calendar.hours[1];
+        let h = 0;
+        h < hoursSettings.length;
 
       ) {
         hours.push({
-          hour: `${h}:00`,
-          available: data.hour !== `${h}:00` ? true : false,
+          hour: `${hoursSettings[h]}:00`,
+          available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
         });
         hours.push({
-          hour: `${h}:30`,
-          available: data.hour !== `${h}:30` ? true : false,
+          hour: `${hoursSettings[h]}:30`,
+          available: data.hour !== `${hoursSettings[h]}:30` ? true : false,
         });
         h++;
       }
@@ -256,7 +259,6 @@ export class DataService {
         .updateOne({  'calendar.website' : host },
         { 'calendar.location' : adminDetails.location ,
           'owner.phone' : adminDetails.phone,
-          'calendar.daysOff' : adminDetails.daysOff,
           'calendar.days' : adminDetails.days,
           'calendar.hours' : adminDetails.hours,
           'calendar.slides' : adminDetails.slides,

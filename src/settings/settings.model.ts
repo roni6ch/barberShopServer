@@ -23,7 +23,6 @@ export interface Settings extends mongoose.Document {
 }
 
 export interface Calendar {
-  daysOff: string[];
   days : Day[];
   slides: number;
   hours: number[];
