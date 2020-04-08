@@ -7,6 +7,7 @@ import { CustomersService } from './customers.service';
 import { DataSchema } from 'src/data/data.model';
 import { SettingsService } from 'src/settings/settings.service';
 import { SettingsSchema } from 'src/settings/settings.model';
+import { SettingsModule } from 'src/settings/settings.module';
 
 @Module({
   imports: [

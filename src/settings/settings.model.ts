@@ -24,6 +24,7 @@ export interface Settings extends mongoose.Document {
 
 export interface Calendar {
   daysOff: string[];
+  days : Day[];
   slides: number;
   hours: number[];
   mail: string;
@@ -31,6 +32,12 @@ export interface Calendar {
   location: string;
   title: string;
   info: string;
+}
+
+export interface Day {
+  day: string;
+  hours: string[];
+  active: boolean;
 }
 
 export interface Owner {

@@ -162,6 +162,23 @@ export class CustomerController {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
+  @Post('adminSearchTreatmentsOld')
+  async adminSearchTreatmentsOld(@Body('param') param: string, @Req() req): Promise<any> {
+    try {
+      let res = await this.cs.adminSearchTreatmentsOld(param.toLowerCase(),req);
+      if (res) return res;
+      else {
+        this.log(
+          'error',
+          'CustomerController -> adminSearchTreatmentsOld() in -> else res',
+        );
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `CustomerController -> adminSearchTreatmentsOld() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
+  }
   log(type, data) {
     console.error(data);
     this.logger.log(type, data);

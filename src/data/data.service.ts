@@ -257,6 +257,7 @@ export class DataService {
         { 'calendar.location' : adminDetails.location ,
           'owner.phone' : adminDetails.phone,
           'calendar.daysOff' : adminDetails.daysOff,
+          'calendar.days' : adminDetails.days,
           'calendar.hours' : adminDetails.hours,
           'calendar.slides' : adminDetails.slides,
           'treatments' : adminDetails.treatments,

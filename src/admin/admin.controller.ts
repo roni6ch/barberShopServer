@@ -2,10 +2,12 @@ import { Controller, Param, Put, Query, HttpException, HttpStatus, Inject, Get, 
 import { AdminService } from './admin.service';
 import { Logger } from 'winston';
 import { Admin } from './admin.model';
+import { CustomersService } from 'src/customers/customers.service';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private as: AdminService, @Inject('winston') private readonly logger: Logger) {}
+  constructor(
+    private cs: CustomersService,private as: AdminService, @Inject('winston') private readonly logger: Logger) {}
 
 
   @Get('getMyTreatments')
@@ -50,6 +52,7 @@ export class AdminController {
       return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
+  
   log(type, data) {
     console.error(data);
     this.logger.log(type, data);

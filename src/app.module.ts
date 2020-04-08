@@ -14,6 +14,7 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { CustomerController } from './customers/customer.controller';
 import { SettingsModule } from './settings/settings.module';
+import { SettingsService } from './settings/settings.service';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { SettingsModule } from './settings/settings.module';
     ),
   ],
   controllers: [],
-  providers: [],
+  providers: []
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
