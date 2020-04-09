@@ -3,23 +3,21 @@ import * as mongoose from 'mongoose';
 export const SettingsSchema = new mongoose.Schema({
   calendar: { type: {} },
   owner: { type: {} },
-  treatments: { type: Array },
+  personals: { type: Array },
   mail: { type: {} },
   gallery: { type: Array },
   galleryDisplay : { type: String },
-  instagramLink : { type: String },
-  personals : { type: Array }
+  instagramLink : { type: String }
 }, { collection: 'settings' })
 
 export interface Settings extends mongoose.Document {
   calendar: Calendar;
   owner: Owner;
-  treatments: Treatment[];
+  personals: Personals[];
   mail: string;
   gallery: string[];
   galleryDisplay : string;
   instagramLink : string;
-  personals: Personal[];
 }
 
  interface Calendar {
@@ -43,13 +41,7 @@ export interface Settings extends mongoose.Document {
   phone: string;
   whatsapp: string;
 }
-
- interface Personal {
-  personal: string;
-  active: boolean;
-}
-
-interface Treatment {
+interface Personals {
   gender: string;
   active: boolean;
   treatments: peronalTreatments[];

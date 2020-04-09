@@ -4,12 +4,26 @@ import { Model } from 'mongoose';
 import { Customer } from './customer.model';
 import { Logger } from 'winston';
 import * as moment from 'moment';
+import { SettingsService } from 'src/settings/settings.service';
+import { constants } from 'src/constants';
+
+var nodemailer = require('nodemailer');
+var jwt = require('jsonwebtoken');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: constants.mail.mail,
+    pass: constants.mail.pass,
+  },
+});
 
 @Injectable()
 export class CustomersService {
   constructor(
     @InjectModel('Customer') private readonly cm: Model<Customer>,
     @Inject('winston') private readonly logger: Logger,
+    private s: SettingsService,
   ) {}
 
   async deleteOldDocuments(oldMonth) {
@@ -68,6 +82,7 @@ export class CustomersService {
       let res = await this.cm.deleteOne({ _id: data['_id'], host }).exec();
       if (res.n > 0) {
         //todo - send email to customer
+        await this.sendUserDeleteMail(data,req);
         return data;
       } else {
         this.log('error', 'CustomersService -> deleteOne() in -> else res');
@@ -78,6 +93,48 @@ export class CustomersService {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
+
+
+  async sendUserDeleteMail(data, req) {
+    let host = req.body.host;
+    try {
+      let resSettings = await this.s.getSettingsFromDB(req);
+      if (resSettings) {
+        const message = {
+          from: resSettings.calendar.mail,
+          to: data.username,
+          subject: 'Message from: ' + resSettings.calendar.website,
+          text:`Your Appointment to Barber, at ${data.dateStr} - ${data.hour} was canceled!`
+            
+        };
+        let res = await transporter.sendMail(message);
+        if (res) {
+          console.log('Email succsess!');
+          return true;
+        } else {
+          this.log(
+            'error',
+            'CustomersService -> sendUserDeleteMail() in -> else res',
+          );
+          return false;
+        }
+      } else {
+        this.log(
+          'error',
+          `CustomersService -> sendUserDeleteMail() => no owner mail`,
+        );
+      }
+    } catch (error) {
+      this.log('error', `CustomersService -> sendEmailPassword() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+
+
 
   async userTreatments(req) {
     let host = req.body.host;

@@ -24,7 +24,7 @@ export class AdminService {
   async getMyTreatments(req){
     let host = req.body.host;
     try {
-      let res = await this.cm.find({host,date: { $gte:+moment().subtract(0,'days').endOf('day')} });
+      let res = await this.cm.find({host,date: { $gte:+moment().subtract(1,'days').endOf('day')} });
       if (res) return res;
       else {
         this.log('error', 'AdminService -> getMyTreatments() in -> else res');
@@ -91,9 +91,8 @@ export class AdminService {
           'owner.phone' : adminDetails.phone,
           'calendar.days' : adminDetails.days,
           'calendar.slides' : adminDetails.slides,
-          'treatments' : adminDetails.treatments,
-          'galleryDisplay':adminDetails.galleryDisplay,
-          'personals':adminDetails.personals
+          'personals' : adminDetails.personals,
+          'galleryDisplay':adminDetails.galleryDisplay
            })
         .exec();
         console.log(result);
