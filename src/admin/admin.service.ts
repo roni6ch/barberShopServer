@@ -90,6 +90,7 @@ export class AdminService {
         { 'calendar.location' : adminDetails.location ,
           'owner.phone' : adminDetails.phone,
           'calendar.days' : adminDetails.days,
+          'calendar.daysOff' : adminDetails.daysOff,
           'calendar.slides' : adminDetails.slides,
           'personals' : adminDetails.personals,
           'galleryDisplay':adminDetails.galleryDisplay
