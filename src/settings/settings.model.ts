@@ -14,7 +14,7 @@ export const SettingsSchema = new mongoose.Schema({
 export interface Settings extends mongoose.Document {
   calendar: Calendar;
   owner: Owner;
-  treatments: string[];
+  treatments: Treatment[];
   mail: string;
   gallery: string[];
   galleryDisplay : string;
@@ -22,7 +22,7 @@ export interface Settings extends mongoose.Document {
   personals: Personal[];
 }
 
-export interface Calendar {
+ interface Calendar {
   days : Day[];
   slides: number;
   hours: number[];
@@ -33,22 +33,29 @@ export interface Calendar {
   info: string;
 }
 
-export interface Day {
+ interface Day {
   day: string;
   hours: string[];
   active: boolean;
 }
 
-export interface Owner {
+ interface Owner {
   phone: string;
   whatsapp: string;
 }
 
-export interface Mail {
-  subject: string;
-}
-
-export interface Personal {
+ interface Personal {
   personal: string;
   active: boolean;
+}
+
+interface Treatment {
+  gender: string;
+  active: boolean;
+  treatments: peronalTreatments[];
+}
+
+interface peronalTreatments {
+  treatment: string;
+  price: string;
 }
