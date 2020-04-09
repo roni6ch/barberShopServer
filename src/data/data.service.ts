@@ -8,8 +8,6 @@ import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
 import { Inject, HttpException, HttpStatus, Req } from '@nestjs/common';
-import { Admin } from 'src/admin/admin.model';
-import { Settings } from 'src/settings/settings.model';
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -21,7 +19,6 @@ var transporter = nodemailer.createTransport({
 
 export class DataService {
   constructor(
-    @InjectModel('Settings') private readonly sm: Model<Settings>,
     @InjectModel('Customer') private readonly cm: Model<Customer>,
     @InjectModel('Data') private readonly dm: Model<Data>,
     @Inject('winston') private readonly logger: Logger,
@@ -61,6 +58,7 @@ export class DataService {
       }
     } else {
       this.log('error', 'DataService -> getData() in -> no owner');
+      return false;
     }
   }
   async setHour(data, req) {
@@ -158,7 +156,7 @@ export class DataService {
   async deleteAllDocuments() {
     try {
       let res = await this.dm.deleteMany();
-      if (res) return res;
+      if (res) return true;
       else {
         this.log('error', 'DataService -> deleteAllDocuments() in -> else res');
         return false;
@@ -194,6 +192,7 @@ export class DataService {
         }
       } else {
         this.log('error', `DataService -> sendContact() => no owner mail`);
+        return false;
       }
     } catch (error) {
       this.log('error', `DataService -> sendContact() => ${error}`);
@@ -251,37 +250,6 @@ export class DataService {
     }
   }
 
-  async updateAdmin(adminDetails, req) {
-    let host = req.body.host;
-    console.log(adminDetails);
-    try {
-      let result = await this.sm
-        .updateOne({  'calendar.website' : host },
-        { 'calendar.location' : adminDetails.location ,
-          'owner.phone' : adminDetails.phone,
-          'calendar.days' : adminDetails.days,
-          'calendar.hours' : adminDetails.hours,
-          'calendar.slides' : adminDetails.slides,
-          'treatments' : adminDetails.treatments,
-          'galleryDisplay':adminDetails.galleryDisplay,
-          'personals':adminDetails.personals
-           })
-        .exec();
-      if (result.n === 1) {
-        return result;
-      } else {
-        this.log('error', 'DataService -> updateAdmin() in -> else res');
-        return false;
-      }
-    } catch (error) {
-      this.log('error', `DataService -> updateAdmin() => ${error}`);
-      return new HttpException(
-        'ExceptionFailed',
-        HttpStatus.EXPECTATION_FAILED,
-      );
-    }
-  }
-
   async userDetails(req) {
     let host = req.body.host;
     let username = req.body.username;
@@ -294,8 +262,8 @@ export class DataService {
         return false;
       }
     } catch (error) {
-      this.log('error', `UsersService -> validateGoogleUser() => ${error}`);
-      throw new HttpException(
+      this.log('error', `AuthService -> validateGoogleUser() => ${error}`);
+      return new HttpException(
         'Problem with saving the user validateGoogleUser',
         HttpStatus.FORBIDDEN,
       );

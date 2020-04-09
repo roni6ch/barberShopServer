@@ -1,9 +1,7 @@
-import { Injectable, Res, HttpStatus, Get, Req, HttpException, Logger, Inject } from '@nestjs/common';
-import { Response } from 'express';
+import { Injectable, HttpStatus, HttpException, Logger, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Settings } from './settings.model';
 import { Model } from 'mongoose';
-import { CustomersService } from 'src/customers/customers.service';
 
 @Injectable()
 export class SettingsService {

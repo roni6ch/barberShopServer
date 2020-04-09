@@ -1,186 +1,39 @@
 import { CustomersService } from './customers.service';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Delete,
-  HttpException,
-  HttpStatus,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Req } from '@nestjs/common';
 import { Customer } from './customer.model';
 import { DataService } from 'src/data/data.service';
-import { Logger } from 'winston';
-import { Inject } from '@nestjs/common';
 
 @Controller('customers')
 export class CustomerController {
-  constructor(
-    private cs: CustomersService,
-    private ds: DataService,
-    @Inject('winston') private readonly logger: Logger,
-  ) {
-  }
-  @Delete('deleteAllDocuments')
-  async deleteAllDocuments(): Promise<boolean> {
-    try {
-      if (await this.ds.deleteAllDocuments()) {
-        try {
-          let res = await this.cs.deleteAllDocuments();
-          if (res) {
-            return res;
-          } else {
-            this.log(
-              'error',
-              'CustomerController -> cs deleteAllDocuments() in -> else res',
-            );
-            return false;
-          }
-        } catch (error) {
-          this.log(
-            'error',
-            `CustomerController -> cs deleteAllDocuments() => ${error}`,
-          );
-          throw new HttpException(
-            'ExceptionFailed',
-            HttpStatus.EXPECTATION_FAILED,
-          );
-        }
-      } else {
-        this.log(
-          'error',
-          'CustomerController -> ds deleteAllDocuments() in -> else res',
-        );
-        return false;
-      }
-    } catch (error) {
-      this.log(
-        'error',
-        `CustomerController -> ds deleteAllDocuments() => ${error}`,
-      );
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
-    }
-  }
-
+  constructor(private cs: CustomersService, private ds: DataService) {}
   @Post()
   async addTreatment(@Body() customer: Customer, @Req() req): Promise<boolean> {
-    try {
-      let res = await this.ds.setHour(customer, req);
-      if (res) {
-        try {
-          let res = await this.cs.addTreatment(customer, req);
-          if (res) return res;
-          else {
-            this.log(
-              'error',
-              'CustomerController -> addTreatment() in -> else res',
-            );
-            return false;
-          }
-        } catch (error) {
-          this.log('error', `CustomerController -> addTreatment() => ${error}`);
-          throw new HttpException(
-            'ExceptionFailed',
-            HttpStatus.EXPECTATION_FAILED,
-          );
-        }
-      } else {
-        this.log('error', 'CustomerController -> setHour() in -> else res');
-        return false;
-      }
-    } catch (error) {
-      this.log('error', `CustomerController -> setHour() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
-    }
+    if (await this.ds.setHour(customer, req))
+      return await this.cs.addTreatment(customer, req);
   }
   @Post('deleteTreatment')
   async deleteTreatment(@Body() customer: Customer, @Req() req): Promise<any> {
-    try {
-      let res = await this.ds.deleteHour(customer, req);
-      if (res) {
-        try {
-          let res = await this.cs.deleteTreatment(customer, req);
-          if (res) return res;
-          else {
-            this.log(
-              'error',
-              'CustomerController -> deleteTreatment() in -> else res',
-            );
-            return false;
-          }
-        } catch (error) {
-          this.log(
-            'error',
-            `CustomerController -> deleteTreatment() => ${error}`,
-          );
-          throw new HttpException(
-            'ExceptionFailed',
-            HttpStatus.EXPECTATION_FAILED,
-          );
-        }
-      } else {
-        this.log('error', 'CustomerController -> deleteHour() in -> else res');
-        return false;
-      }
-    } catch (error) {
-      this.log('error', `CustomerController -> deleteHour() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
-    }
+    if (await this.ds.deleteHour(customer, req))
+      return await this.cs.deleteTreatment(customer, req);
   }
   @Get('userTreatments')
   async userTreatments(@Req() req): Promise<any> {
-    try {
-      let res = await this.cs.userTreatments(req);
-      if (res) return res;
-      else {
-        this.log(
-          'error',
-          'CustomerController -> userTreatments() in -> else res',
-        );
-        return false;
-      }
-    } catch (error) {
-      this.log('error', `CustomerController -> userTreatments() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
-    }
+    return await this.cs.userTreatments(req);
   }
   @Get('userTreatmentsOld')
   async userTreatmentsOld(@Req() req): Promise<any> {
-    try {
-      let res = await this.cs.userTreatmentsOld(req);
-      if (res) return res;
-      else {
-        this.log(
-          'error',
-          'CustomerController -> userTreatmentsOld() in -> else res',
-        );
-        return false;
-      }
-    } catch (error) {
-      this.log('error', `CustomerController -> userTreatmentsOld() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
-    }
+    return await this.cs.userTreatmentsOld(req);
   }
   @Post('adminSearchTreatmentsOld')
-  async adminSearchTreatmentsOld(@Body('param') param: string, @Req() req): Promise<any> {
-    try {
-      let res = await this.cs.adminSearchTreatmentsOld(param.toLowerCase(),req);
-      if (res) return res;
-      else {
-        this.log(
-          'error',
-          'CustomerController -> adminSearchTreatmentsOld() in -> else res',
-        );
-        return false;
-      }
-    } catch (error) {
-      this.log('error', `CustomerController -> adminSearchTreatmentsOld() => ${error}`);
-      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
-    }
+  async adminSearchTreatmentsOld(
+    @Body('param') param: string,
+    @Req() req,
+  ): Promise<any> {
+    return await this.cs.adminSearchTreatmentsOld(param.toLowerCase(), req);
   }
-  log(type, data) {
-    console.error(data);
-    this.logger.log(type, data);
+  @Delete('deleteAllDocuments')
+  async deleteAllDocuments(): Promise<boolean> {
+    if (await this.ds.deleteAllDocuments())
+      return await this.cs.deleteAllDocuments();
   }
 }

@@ -2,11 +2,10 @@ import { Injectable, Inject, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Logger } from 'winston';
-import { User } from './users.model';
+import { Auth } from './auth.model';
 import { constants } from 'src/constants';
-var nodemailer = require('nodemailer');
 import { SettingsService } from 'src/settings/settings.service';
-import { Customer } from 'src/customers/customer.model';
+var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 
 var transporter = nodemailer.createTransport({
@@ -18,9 +17,9 @@ var transporter = nodemailer.createTransport({
 });
 
 @Injectable()
-export class UsersService {
+export class AuthService {
   constructor(
-    @InjectModel('Users') private readonly um: Model<User>,
+    @InjectModel('Auth') private readonly um: Model<Auth>,
     @Inject('winston') private readonly logger: Logger,
     private s: SettingsService,
   ) {}
@@ -43,14 +42,14 @@ export class UsersService {
           if (res) {
             return await this.generateToken(username, password);
           } else {
-            this.log('error', 'UsersService -> save() in -> else res');
+            this.log('error', 'AuthService -> save() in -> else res');
             throw new HttpException(
               'Problem with saving the user',
               HttpStatus.FORBIDDEN,
             );
           }
         } catch (error) {
-          this.log('error', `UsersService -> save() => ${error}`);
+          this.log('error', `AuthService -> save() => ${error}`);
           throw new HttpException(
             'ExceptionFailed',
             HttpStatus.EXPECTATION_FAILED,
@@ -59,12 +58,12 @@ export class UsersService {
       } else {
         this.log(
           'error',
-          'UsersService -> findOne() in -> user already exist!',
+          'AuthService -> findOne() in -> user already exist!',
         );
         return new HttpException('user already exist!', HttpStatus.FORBIDDEN);
       }
     } catch (error) {
-      this.log('error', `UsersService -> findOne() => ${error}`);
+      this.log('error', `AuthService -> findOne() => ${error}`);
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
@@ -102,7 +101,7 @@ export class UsersService {
         await newUser.save();
         await this.sendEmailPassword(username, password, req);
       } catch (error) {
-        this.log('error', `UsersService -> validateGoogleUser() => ${error}`);
+        this.log('error', `AuthService -> validateGoogleUser() => ${error}`);
         throw new HttpException(
           'Problem with saving the user validateGoogleUser',
           HttpStatus.FORBIDDEN,
@@ -135,18 +134,18 @@ export class UsersService {
         } else {
           this.log(
             'error',
-            'UsersService -> sendEmailPassword() in -> else res',
+            'AuthService -> sendEmailPassword() in -> else res',
           );
           return false;
         }
       } else {
         this.log(
           'error',
-          `UsersService -> sendEmailPassword() => no owner mail`,
+          `AuthService -> sendEmailPassword() => no owner mail`,
         );
       }
     } catch (error) {
-      this.log('error', `UsersService -> sendEmailPassword() => ${error}`);
+      this.log('error', `AuthService -> sendEmailPassword() => ${error}`);
       return new HttpException(
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
@@ -171,7 +170,7 @@ export class UsersService {
         return new HttpException('no such user', HttpStatus.FORBIDDEN);
       }
     }catch(error){
-      this.log('error', `UsersService -> forgotPassword() => ${error}`);
+      this.log('error', `AuthService -> forgotPassword() => ${error}`);
       return new HttpException(
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
@@ -193,7 +192,7 @@ export class UsersService {
         return false;
       }
     }catch(error){
-      this.log('error', `UsersService -> forgotPassword() => ${error}`);
+      this.log('error', `AuthService -> forgotPassword() => ${error}`);
       return new HttpException(
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
