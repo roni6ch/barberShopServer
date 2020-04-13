@@ -140,7 +140,6 @@ export class DataService {
   async deleteOldDocuments(oldMonth){
     try {
       let res = await this.dm.deleteMany({"dayTimestamp" : { $lt : oldMonth }});
-      console.log('res',res);
       if (res) return res;
       else {
         this.log('error', 'DataService -> delete() in -> else res');

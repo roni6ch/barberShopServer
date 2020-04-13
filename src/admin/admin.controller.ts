@@ -1,5 +1,6 @@
-import { Controller, Put, Query,  Inject, Get, Post, Body, Req } from '@nestjs/common';
+import { Controller, Put, Query,  Inject, Get, Post, Body, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 export class AdminController {
@@ -19,6 +20,12 @@ export class AdminController {
     return await this.as.updateAdmin(adminDetails,req);
   }
   
+  @Post('uploadImages')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImages(@UploadedFile() file,@Req() req){
+    return await this.as.uploadImages(file,req);
+  }
+
   @Put()
   async setAvailability(
     @Query('dayTimestamp') dayTimestamp: string,

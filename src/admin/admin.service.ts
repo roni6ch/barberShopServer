@@ -1,5 +1,6 @@
 import { Injectable, Inject, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { constants } from 'src/constants';
 import { Data } from 'src/data/data.model';
 import { Model } from 'mongoose';
 import { Logger } from 'winston';
@@ -8,7 +9,12 @@ import { SettingsService } from 'src/settings/settings.service';
 import { Settings } from 'src/settings/settings.model';
 import { Auth } from 'src/auth/auth.model';
 import * as moment from 'moment';
-
+var cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: constants.cloudinary.cloudName,
+  api_key: constants.cloudinary.apiKey,
+  api_secret: constants.cloudinary.apiSecret,
+});
 
 @Injectable()
 export class AdminService {
@@ -21,10 +27,17 @@ export class AdminService {
     private s: SettingsService,
   ) {}
 
-  async getMyTreatments(req){
+  async getMyTreatments(req) {
     let host = req.body.host;
     try {
-      let res = await this.cm.find({host,date: { $gte:+moment().subtract(1,'days').endOf('day')} });
+      let res = await this.cm.find({
+        host,
+        date: {
+          $gte: +moment()
+            .subtract(1, 'days')
+            .endOf('day'),
+        },
+      });
       if (res) return res;
       else {
         this.log('error', 'AdminService -> getMyTreatments() in -> else res');
@@ -32,26 +45,31 @@ export class AdminService {
       }
     } catch (error) {
       this.log('error', `AdminService -> getMyTreatments() => ${error}`);
-      return new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
     }
   }
 
   async checkPermissions(req) {
     let host = req.body.host;
     try {
-    let res = await this.s.getSettingsFromDB(req);
-        if (res)
-          if (req.body.username.toLowerCase() === res.calendar.mail.toLowerCase()) {
-            let res = await this.am.find({ username: req.body.username });
-            if (res.length > 0) return true;
-            else {
-              this.log(
-                'error',
-                'AdminService -> checkPermissions() in -> else res',
-              );
-              return false;
-            }
-        }else{
+      let res = await this.s.getSettingsFromDB(req);
+      if (res)
+        if (
+          req.body.username.toLowerCase() === res.calendar.mail.toLowerCase()
+        ) {
+          let res = await this.am.find({ username: req.body.username });
+          if (res.length > 0) return true;
+          else {
+            this.log(
+              'error',
+              'AdminService -> checkPermissions() in -> else res',
+            );
+            return false;
+          }
+        } else {
           return false; //not an admin
         }
     } catch (error) {
@@ -81,23 +99,37 @@ export class AdminService {
       );
     }
   }
+  async uploadImages(file, req) {
+    console.log('file',file);
+    cloudinary.uploader.upload(file.originalname, (error,result)=> {
+      if (error)
+      console.log('error',error);
+      else{
+      console.log('result',result);
+      return result;
+      }
+    });
+  }
 
   async updateAdmin(adminDetails, req) {
     let host = req.body.host;
     try {
       let result = await this.sm
-        .findOneAndUpdate({  'calendar.website' : host },
-        { 'calendar.location' : adminDetails.location ,
-          'owner.phone' : adminDetails.phone,
-          'calendar.halfTime' : adminDetails.halfTime,
-          'calendar.days' : adminDetails.days,
-          'calendar.daysOff' : adminDetails.daysOff,
-          'calendar.slides' : adminDetails.slides,
-          'personals' : adminDetails.personals,
-          'galleryDisplay':adminDetails.galleryDisplay
-           })
+        .findOneAndUpdate(
+          { 'calendar.website': host },
+          {
+            'calendar.location': adminDetails.location,
+            'owner.phone': adminDetails.phone,
+            'calendar.halfTime': adminDetails.halfTime,
+            'calendar.days': adminDetails.days,
+            'calendar.daysOff': adminDetails.daysOff,
+            'calendar.slides': adminDetails.slides,
+            personals: adminDetails.personals,
+            galleryDisplay: adminDetails.galleryDisplay,
+          },
+        )
         .exec();
-        console.log(result);
+      console.log(result);
       if (result) {
         this.s.settings = null;
         return result;
