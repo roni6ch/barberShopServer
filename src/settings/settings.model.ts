@@ -21,6 +21,7 @@ export interface Settings extends mongoose.Document {
 }
 
  interface Calendar {
+  halfTime:boolean;
   days : Day[];
   daysOff : DaysOff[];
   slides: number;

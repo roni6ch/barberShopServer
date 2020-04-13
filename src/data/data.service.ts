@@ -210,6 +210,7 @@ export class DataService {
     let resSettings = await this.s.getSettingsFromDB(req);
     console.log(data);
     
+    let halfTime = resSettings.calendar.halfTime;
     let hoursSettings = resSettings.calendar.days[moment(+data.date).day() % 7].hours;
     if (resSettings) {
       for (
@@ -221,10 +222,11 @@ export class DataService {
           hour: `${hoursSettings[h]}:00`,
           available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
         });
+        halfTime ?
         hours.push({
           hour: `${hoursSettings[h]}:30`,
           available: data.hour !== `${hoursSettings[h]}:30` ? true : false,
-        });
+        }) :'';
         h++;
       }
       const newCalendarDay = new this.dm({

@@ -89,6 +89,7 @@ export class AdminService {
         .findOneAndUpdate({  'calendar.website' : host },
         { 'calendar.location' : adminDetails.location ,
           'owner.phone' : adminDetails.phone,
+          'calendar.halfTime' : adminDetails.halfTime,
           'calendar.days' : adminDetails.days,
           'calendar.daysOff' : adminDetails.daysOff,
           'calendar.slides' : adminDetails.slides,
