@@ -7,11 +7,15 @@ import { AdminService } from './admin.service';
 import { SettingsSchema } from 'src/settings/settings.model';
 import { AuthSchema } from 'src/auth/auth.model';
 import { SettingsModule } from 'src/settings/settings.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: '/upload',
+    }),
     SettingsModule,
     MongooseModule.forFeature([{name:'Auth',schema:AuthSchema}]),
     MongooseModule.forFeature([{name:'Customer',schema:CustomerSchema}]),

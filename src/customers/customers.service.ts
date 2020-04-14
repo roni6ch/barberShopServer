@@ -149,7 +149,7 @@ export class CustomersService {
               .subtract(0, 'days')
               .endOf('day'),
           },
-        })
+        }).sort({'date': 'asc'})
         .exec();
       if (res) return res;
       else {

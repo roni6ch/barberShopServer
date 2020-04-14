@@ -9,6 +9,7 @@ import { SettingsService } from 'src/settings/settings.service';
 import { Settings } from 'src/settings/settings.model';
 import { Auth } from 'src/auth/auth.model';
 import * as moment from 'moment';
+
 var cloudinary = require('cloudinary').v2;
 cloudinary.config({
   cloud_name: constants.cloudinary.cloudName,
@@ -26,6 +27,21 @@ export class AdminService {
     @Inject('winston') private readonly logger: Logger,
     private s: SettingsService,
   ) {}
+
+  async uploadImages(file, req) {
+    console.log('file',file);
+   await cloudinary.uploader.upload('http://localhost:4200/upload/' + file.originalname.trim(),{ resource_type: "image", public_id: "testVid" })
+    .then(function (image) {
+      console.log("* " + image.public_id);
+      console.log("* " + image.url);
+      return image;
+    })
+    .catch(function (err) {
+      console.log("** File Upload (Promise)");
+      if (err) { console.warn(err); }
+      return err;
+    });
+  }
 
   async getMyTreatments(req) {
     let host = req.body.host;
@@ -99,17 +115,7 @@ export class AdminService {
       );
     }
   }
-  async uploadImages(file, req) {
-    console.log('file',file);
-    cloudinary.uploader.upload(file.originalname, (error,result)=> {
-      if (error)
-      console.log('error',error);
-      else{
-      console.log('result',result);
-      return result;
-      }
-    });
-  }
+
 
   async updateAdmin(adminDetails, req) {
     let host = req.body.host;
