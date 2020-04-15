@@ -127,6 +127,7 @@ export class AdminService {
             'owner.location': adminDetails.location,
             'owner.phone': adminDetails.phone,
             'calendar.halfTime': adminDetails.halfTime,
+            'calendar.calendarSize': adminDetails.calendarSize,
             'calendar.days': adminDetails.days,
             'calendar.daysOff': adminDetails.daysOff,
             'calendar.slides': adminDetails.slides,

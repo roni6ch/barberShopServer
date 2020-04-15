@@ -7,7 +7,8 @@ export const SettingsSchema = new mongoose.Schema({
   mail: { type: {} },
   gallery: { type: Array },
   galleryDisplay : { type: String },
-  instagramLink : { type: String }
+  instagramLink : { type: String },
+  i18n : { type: {} }
 }, { collection: 'settings' })
 
 export interface Settings extends mongoose.Document {
@@ -18,7 +19,9 @@ export interface Settings extends mongoose.Document {
   gallery: string[];
   galleryDisplay : string;
   instagramLink : string;
+  i18n: {};
 }
+
 
  interface Calendar {
   halfTime:boolean;

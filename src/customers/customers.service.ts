@@ -65,6 +65,7 @@ export class CustomersService {
     const newTreatment = new this.cm(customer);
     try {
       let res = await newTreatment.save();
+                await this.sendUserMail(customer,req,true);
       if (res) return res;
       else {
         this.log('error', 'CustomersService -> save() in -> else res');
@@ -82,7 +83,7 @@ export class CustomersService {
       let res = await this.cm.deleteOne({ _id: data['_id'], host }).exec();
       if (res.n > 0) {
         //todo - send email to customer
-        await this.sendUserDeleteMail(data,req);
+        await this.sendUserMail(data,req,false);
         return data;
       } else {
         this.log('error', 'CustomersService -> deleteOne() in -> else res');
@@ -95,17 +96,22 @@ export class CustomersService {
   }
 
 
-  async sendUserDeleteMail(data, req) {
+  async sendUserMail(data, req , schedule) {
     let host = req.body.host;
     try {
       let resSettings = await this.s.getSettingsFromDB(req);
+      let i18n = resSettings.i18n[data.lang].calendar;
       if (resSettings) {
         const message = {
           from: resSettings.owner.mail,
           to: data.username,
           subject: 'Message from: ' + resSettings.owner.website,
-          text:`Your Appointment to Barber, at ${data.dateStr} - ${data.hour} was canceled!`
-            
+          text:`${i18n.modal.yourAppointmentTxt}, ${i18n.modal.at} 
+          ${data.hour} ${i18n.modal.at} 
+          ${i18n.titleH1} ${i18n.titleH1span} - 
+          ${i18n.modal.for} ${data.haircut} 
+           ${schedule? i18n.modal.appointmentScheduled :i18n.modal.appointmentCanceled}`
+
         };
         let res = await transporter.sendMail(message);
         if (res) {
@@ -114,18 +120,18 @@ export class CustomersService {
         } else {
           this.log(
             'error',
-            'CustomersService -> sendUserDeleteMail() in -> else res',
+            'CustomersService -> sendUserMail() in -> else res',
           );
           return false;
         }
       } else {
         this.log(
           'error',
-          `CustomersService -> sendUserDeleteMail() => no owner mail`,
+          `CustomersService -> sendUserMail() => no owner mail`,
         );
       }
     } catch (error) {
-      this.log('error', `CustomersService -> sendEmailPassword() => ${error}`);
+      this.log('error', `CustomersService -> sendUserMail() => ${error}`);
       return new HttpException(
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
