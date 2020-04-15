@@ -117,9 +117,9 @@ export class AuthService {
       let resSettings = await this.s.getSettingsFromDB(req);
       if (resSettings) {
         const message = {
-          from: resSettings.calendar.mail,
+          from: resSettings.owner.mail,
           to: contact,
-          subject: 'Message from: ' + resSettings.calendar.website,
+          subject: 'Message from: ' + resSettings.owner.website,
           text:
             'Please keep your password: ' +
             password +

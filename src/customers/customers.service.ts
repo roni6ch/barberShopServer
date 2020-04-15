@@ -101,9 +101,9 @@ export class CustomersService {
       let resSettings = await this.s.getSettingsFromDB(req);
       if (resSettings) {
         const message = {
-          from: resSettings.calendar.mail,
+          from: resSettings.owner.mail,
           to: data.username,
-          subject: 'Message from: ' + resSettings.calendar.website,
+          subject: 'Message from: ' + resSettings.owner.website,
           text:`Your Appointment to Barber, at ${data.dateStr} - ${data.hour} was canceled!`
             
         };

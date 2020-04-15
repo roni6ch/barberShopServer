@@ -74,7 +74,7 @@ export class AdminService {
       let res = await this.s.getSettingsFromDB(req);
       if (res)
         if (
-          req.body.username.toLowerCase() === res.calendar.mail.toLowerCase()
+          req.body.username.toLowerCase() === res.owner.mail.toLowerCase()
         ) {
           let res = await this.am.find({ username: req.body.username });
           if (res.length > 0) return true;
@@ -122,9 +122,9 @@ export class AdminService {
     try {
       let result = await this.sm
         .findOneAndUpdate(
-          { 'calendar.website': host },
+          { 'owner.website': host },
           {
-            'calendar.location': adminDetails.location,
+            'owner.location': adminDetails.location,
             'owner.phone': adminDetails.phone,
             'calendar.halfTime': adminDetails.halfTime,
             'calendar.days': adminDetails.days,

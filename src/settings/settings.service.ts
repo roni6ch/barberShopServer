@@ -18,7 +18,7 @@ export class SettingsService {
     }
     let host = req.headers.origin;
     try {
-      let res = await this.sm.findOne({ 'calendar.website' : host }).exec();
+      let res = await this.sm.findOne({ 'owner.website' : host }).exec();
       if (res) {this.settings = res;return res;}
       else {
         this.log('error', 'DataService -> getData() in -> else res');

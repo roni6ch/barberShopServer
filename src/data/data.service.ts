@@ -178,8 +178,8 @@ export class DataService {
       if (resSettings) {
         const message = {
           from: contact.mail,
-          to: resSettings.calendar.mail,
-          subject: resSettings.mail.subject + contact.name,
+          to: resSettings.owner.mail,
+          subject: resSettings.i18n["En"].contact.subject + contact.name,
           text: contact.message + ' from: ' + contact.phone,
         };
         let res = await transporter.sendMail(message);
