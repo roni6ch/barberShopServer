@@ -76,6 +76,27 @@ export class CustomersService {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
+  async editTreatment(customer, req) {
+    let host = req.body.host;
+    customer.username = req.body.username.toLowerCase();
+    console.log(customer);
+    let _id = customer._id;
+    delete customer._id;
+    console.log(customer);
+    try {
+      let res = await this.cm.findOneAndUpdate({ _id, host },customer).exec();
+                await this.sendUserMail(customer,req,true);
+      if (res) return res;
+      else {
+        this.log('error', 'CustomersService -> save() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `CustomersService -> save() => ${error}`);
+      throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
+    }
+  }
+  
 
   async deleteTreatment(data: Customer, req) {
     let host = req.body.host;
