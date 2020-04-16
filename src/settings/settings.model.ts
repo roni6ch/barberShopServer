@@ -4,6 +4,7 @@ export const SettingsSchema = new mongoose.Schema({
   calendar: { type: {} },
   owner: { type: {} },
   personals: { type: Array },
+  treatmentTimes: { type: Array },
   mail: { type: {} },
   gallery: { type: Array },
   galleryDisplay : { type: String },
@@ -15,6 +16,7 @@ export interface Settings extends mongoose.Document {
   calendar: Calendar;
   owner: Owner;
   personals: Personals[];
+  treatmentTimes: string[];
   mail: string;
   gallery: string[];
   galleryDisplay : string;

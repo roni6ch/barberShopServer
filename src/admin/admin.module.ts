@@ -14,7 +14,7 @@ import { MulterModule } from '@nestjs/platform-express';
 @Module({
   imports: [
     MulterModule.register({
-      dest: '/upload',
+      //dest: '/upload',
     }),
     SettingsModule,
     MongooseModule.forFeature([{name:'Auth',schema:AuthSchema}]),
