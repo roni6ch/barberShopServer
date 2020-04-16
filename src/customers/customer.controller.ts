@@ -11,6 +11,11 @@ export class CustomerController {
     if (await this.ds.setHour(customer, req))
       return await this.cs.addTreatment(customer, req);
   }
+  @Post()
+  async editTreatment(@Body() customer: Customer, @Req() req): Promise<boolean> {
+    if (await this.ds.setHour(customer, req))
+      return await this.cs.addTreatment(customer, req);
+  }
   @Post('deleteTreatment')
   async deleteTreatment(@Body() customer: Customer, @Req() req): Promise<any> {
     if (await this.ds.deleteHour(customer, req))
