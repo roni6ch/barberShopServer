@@ -65,4 +65,5 @@ interface Personals {
 interface peronalTreatments {
   treatment: string;
   price: string;
+  time: string;
 }
