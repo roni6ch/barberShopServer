@@ -7,6 +7,8 @@ import { constants } from 'src/constants';
 import { SettingsService } from 'src/settings/settings.service';
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
+var bcrypt = require('bcryptjs');
+var salt = bcrypt.genSaltSync(10);
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -31,11 +33,14 @@ export class AuthService {
       let findUser = await this.um.findOne({ username, host }).exec();
       if (!findUser) {
         try {
+
+          var password = bcrypt.hashSync(password, salt);
           let data = {
             username,
             password,
             host,
           };
+
           const newUser = new this.um(data);
           let res = await newUser.save();
 
@@ -73,7 +78,7 @@ export class AuthService {
     username = username.toLowerCase();
     const user = await this.um.findOne({ username, host }).exec();
     if (user !== null) {
-      if (password === user.password)
+      if (bcrypt.compareSync(password, user.password))
         return this.generateToken(username, password);
       else {
         return new HttpException('password incorrect', HttpStatus.FORBIDDEN);
