@@ -24,18 +24,13 @@ export interface Settings extends mongoose.Document {
   i18n: {};
 }
 
-
  interface Calendar {
-  halfTime:boolean;
+  timeSpacing:string;
   days : Day[];
   daysOff : DaysOff[];
   slides: number;
-  hours: number[];
-  mail: string;
-  website: string;
-  location: string;
-  title: string;
-  info: string;
+  calendarSize: number;
+  showPrices: boolean;
 }
 
  interface Day {

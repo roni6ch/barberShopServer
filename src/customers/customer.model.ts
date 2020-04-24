@@ -11,6 +11,7 @@ export const CustomerSchema = new mongoose.Schema({
     hour: { type: String, required: true },
     host: { type: String, required: true },
     username: { type: String, required: true },
+    treatmentTime : { type: String, required: true },
     lang: { type: String, required: true },
     other: { type: String }
 }, { collection: 'customers' })
@@ -26,6 +27,7 @@ export interface Customer extends mongoose.Document {
   hour: string;
   host: string;
   username: string;
+  treatmentTime: string;
   lang: string;
   other: string;
 }

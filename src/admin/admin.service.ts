@@ -113,11 +113,12 @@ export class AdminService {
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
       );
-    }
+    } 
   }
 
 
   async updateAdmin(adminDetails, req) {
+    console.log(adminDetails);
     let host = req.body.host;
     try {
       let result = await this.sm
@@ -126,7 +127,8 @@ export class AdminService {
           {
             'owner.location': adminDetails.location,
             'owner.phone': adminDetails.phone,
-            'calendar.halfTime': adminDetails.halfTime,
+            'calendar.timeSpacing': adminDetails.timeSpacing,
+            'calendar.showPrices': adminDetails.showPrices,
             'calendar.calendarSize': adminDetails.calendarSize,
             'calendar.days': adminDetails.days,
             'calendar.daysOff': adminDetails.daysOff,

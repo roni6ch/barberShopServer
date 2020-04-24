@@ -8,7 +8,6 @@ import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
 import { Inject, HttpException, HttpStatus, Req } from '@nestjs/common';
-
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -24,7 +23,6 @@ export class DataService {
     @Inject('winston') private readonly logger: Logger,
     private s: SettingsService,
   ) {}
-
   async getData(req) {
     let host = req.body.host;
     let calendar = [];
@@ -34,7 +32,11 @@ export class DataService {
 
     let res = await this.s.getSettingsFromDB(req);
     if (res) {
-      for (let i = 0; i < res.calendar.slides * 14; i++) {
+      for (
+        let i = 0;
+        i < res.calendar.slides * this.s.settings.calendar.calendarSize;
+        i++
+      ) {
         let date = moment(weekStart).add(i, 'days');
         calendar.push((+new Date(+date)).toString());
       }
@@ -42,7 +44,14 @@ export class DataService {
       try {
         //end of yasterday
         let res = await this.dm
-          .find({ host ,dayTimestamp: { $gte:+moment().subtract(1,'days').endOf('day')}  })
+          .find({
+            host,
+            dayTimestamp: {
+              $gte: +moment()
+                .subtract(1, 'days')
+                .endOf('day'),
+            },
+          })
           // .where('dayTimestamp').in(calendar)
           .exec();
         if (res) return res;
@@ -136,10 +145,9 @@ export class DataService {
       );
     }
   }
-
-  async deleteOldDocuments(oldMonth){
+  async deleteOldDocuments(oldMonth) {
     try {
-      let res = await this.dm.deleteMany({"dayTimestamp" : { $lt : oldMonth }});
+      let res = await this.dm.deleteMany({ dayTimestamp: { $lt: oldMonth } });
       if (res) return res;
       else {
         this.log('error', 'DataService -> delete() in -> else res');
@@ -179,7 +187,7 @@ export class DataService {
         const message = {
           from: contact.mail,
           to: resSettings.owner.mail,
-          subject: resSettings.i18n["En"].contact.subject + contact.name,
+          subject: resSettings.i18n['En'].contact.subject + contact.name,
           text: contact.message + ' from: ' + contact.phone,
         };
         let res = await transporter.sendMail(message);
@@ -207,26 +215,44 @@ export class DataService {
     console.log('new day -> create one');
     let hours = [];
     let resSettings = await this.s.getSettingsFromDB(req);
-    console.log(data);
-    
-    let halfTime = resSettings.calendar.halfTime;
+    //let timeSpacing = resSettings.calendar.timeSpacing;
     let hoursSettings = resSettings.calendar.days[moment(+data.date).day() % 7].hours;
     if (resSettings) {
-      for (
-        let h = 0;
-        h < hoursSettings.length;
-
-      ) {
-        hours.push({
-          hour: `${hoursSettings[h]}:00`,
-          available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
-        });
-        halfTime ?
-        hours.push({
-          hour: `${hoursSettings[h]}:30`,
-          available: data.hour !== `${hoursSettings[h]}:30` ? true : false,
-        }) :'';
-        h++;
+      let addedHour = 0;
+      let tt = +data.treatmentTime;
+      for (let h = 0; h < hoursSettings.length - addedHour; h++) {
+        if (resSettings.calendar.timeSpacing == '0.25') {
+          hours.push({
+            hour: `${hoursSettings[h]}:00`,
+            available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
+          });
+          hours.push({
+            hour: `${hoursSettings[h]}:15`,
+            available: data.hour !== `${hoursSettings[h]}:15` ? true : false,
+          });
+          hours.push({
+            hour: `${hoursSettings[h]}:30`,
+            available: data.hour !== `${hoursSettings[h]}:30` ? true : false,
+          });
+          hours.push({
+            hour: `${hoursSettings[h]}:45`,
+            available: data.hour !== `${hoursSettings[h]}:45`? true : false,
+          });
+        } else if (resSettings.calendar.timeSpacing == '0.5') {
+          hours.push({
+            hour: `${hoursSettings[h]}:00`,
+            available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
+          });
+          hours.push({
+            hour: `${hoursSettings[h]}:30`,
+            available: data.hour !== `${hoursSettings[h]}:30`  ? true : false,
+          });
+        } else if (resSettings.calendar.timeSpacing == '1') {
+          hours.push({
+            hour: `${hoursSettings[h]}:00`,
+            available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
+          });
+        }
       }
       const newCalendarDay = new this.dm({
         dayTimestamp: data.date,
@@ -256,11 +282,15 @@ export class DataService {
     let host = req.body.host;
     let username = req.body.username;
     try {
-      const user = await this.cm.findOne({ username, host }, { _id:0 ,id:0, date:0,dateStr:0,hour:0}).exec();
+      const user = await this.cm
+        .findOne(
+          { username, host },
+          { _id: 0, id: 0, date: 0, dateStr: 0, hour: 0 },
+        )
+        .exec();
       if (user) {
         return user;
-      }
-      else{
+      } else {
         return false;
       }
     } catch (error) {
