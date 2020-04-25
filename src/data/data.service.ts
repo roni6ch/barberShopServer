@@ -210,57 +210,64 @@ export class DataService {
       );
     }
   }
+
+
+  async setHour2(data, req) {
+    let host = req.body.host;
+    let res = await this.dm.findOne({ dayTimestamp: +data.date, host }).exec();
+    
+    let hours = [];
+    let resSettings = await this.s.getSettingsFromDB(req);
+    let hoursSettings = resSettings.calendar.days[moment(+data.date).day() % 7].hours;
+    if (res && res.hours) {
+      //loop hours
+      
+    }
+  }
+
+
   async addCalendarDay(data, req) {
     let host = req.body.host;
     console.log('new day -> create one');
     let hours = [];
     let resSettings = await this.s.getSettingsFromDB(req);
-    //let timeSpacing = resSettings.calendar.timeSpacing;
     let hoursSettings = resSettings.calendar.days[moment(+data.date).day() % 7].hours;
     if (resSettings) {
+      let timeSpacing = resSettings.calendar.timeSpacing;
+      let minutesArr = ["00"];
+      if (timeSpacing == '0.25') minutesArr = ["00", "15", "30", "45"];
+      else if(timeSpacing == '0.5') minutesArr = ["00", "30"];
       let addedHour = 0;
-      let tt = +data.treatmentTime;
-      for (let h = 0; h < hoursSettings.length - addedHour; h++) {
-        if (resSettings.calendar.timeSpacing == '0.25') {
-          hours.push({
-            hour: `${hoursSettings[h]}:00`,
-            available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
+
+      let loopNotAvailableTimes = 0;
+      let startLoop = false;
+      for (let h = 0; h < hoursSettings.length - addedHour; h++) { // if the same hour and minut then start count
+          minutesArr.forEach((minutes) => {
+            if (hoursSettings[h] == data.hour.split(":")[0] && minutes == data.hour.split(":")[1]){
+              loopNotAvailableTimes = +data.treatmentTime / +timeSpacing;
+              startLoop = true;
+            }
+            hours.push({
+              hour: `${hoursSettings[h]}:${minutes}`,
+              available: !startLoop ? true : false,
+            });
+            if (startLoop){
+              loopNotAvailableTimes -= 1;
+              console.log('loop times',loopNotAvailableTimes);
+              if (loopNotAvailableTimes == 0){
+                startLoop = false;
+              }
+            }
+            
           });
-          hours.push({
-            hour: `${hoursSettings[h]}:15`,
-            available: data.hour !== `${hoursSettings[h]}:15` ? true : false,
-          });
-          hours.push({
-            hour: `${hoursSettings[h]}:30`,
-            available: data.hour !== `${hoursSettings[h]}:30` ? true : false,
-          });
-          hours.push({
-            hour: `${hoursSettings[h]}:45`,
-            available: data.hour !== `${hoursSettings[h]}:45`? true : false,
-          });
-        } else if (resSettings.calendar.timeSpacing == '0.5') {
-          hours.push({
-            hour: `${hoursSettings[h]}:00`,
-            available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
-          });
-          hours.push({
-            hour: `${hoursSettings[h]}:30`,
-            available: data.hour !== `${hoursSettings[h]}:30`  ? true : false,
-          });
-        } else if (resSettings.calendar.timeSpacing == '1') {
-          hours.push({
-            hour: `${hoursSettings[h]}:00`,
-            available: data.hour !== `${hoursSettings[h]}:00` ? true : false,
-          });
-        }
       }
+
       const newCalendarDay = new this.dm({
         dayTimestamp: data.date,
         available: true,
         hours,
         host,
       });
-
       try {
         let result = await newCalendarDay.save();
         if (result.n === 0) {
