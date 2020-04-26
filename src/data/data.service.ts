@@ -190,14 +190,14 @@ export class DataService {
           subject: resSettings.i18n['En'].contact.subject + contact.name,
           text: contact.message + ' from: ' + contact.phone,
         };
-        let res = await transporter.sendMail(message);
+     /*  let res = await transporter.sendMail(message);
         if (res) {
           console.log('Email succsess!');
           return true;
         } else {
           this.log('error', 'DataService -> sendContact() in -> else res');
           return false;
-        }
+        }*/
       } else {
         this.log('error', `DataService -> sendContact() => no owner mail`);
         return false;

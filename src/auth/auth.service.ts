@@ -132,7 +132,7 @@ export class AuthService {
             contact +
             ' or login with google Button :)',
         };
-        let res = await transporter.sendMail(message);
+       /* let res = await transporter.(message);
         if (res) {
           console.log('Email succsess!');
           return true;
@@ -142,7 +142,7 @@ export class AuthService {
             'AuthService -> sendEmailPassword() in -> else res',
           );
           return false;
-        }
+        }*/
       } else {
         this.log(
           'error',

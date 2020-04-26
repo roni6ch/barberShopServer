@@ -134,7 +134,7 @@ export class CustomersService {
            ${schedule? i18n.modal.appointmentScheduled :i18n.modal.appointmentCanceled}`
 
         };
-        let res = await transporter.sendMail(message);
+       /* let res = await transporter.sendMail(message);
         if (res) {
           console.log('Email succsess!');
           return true;
@@ -144,7 +144,7 @@ export class CustomersService {
             'CustomersService -> sendUserMail() in -> else res',
           );
           return false;
-        }
+        }*/
       } else {
         this.log(
           'error',
@@ -226,7 +226,7 @@ export class CustomersService {
       let res = await this.cm
         .find({
           host,
-          $or: [{ username: param }, { name: param }, { phone: param }],
+          $or: [{ username: { $regex: param } }, { name:  { $regex: param  } }, { phone:  { $regex: param } }],
           date: {
             $lte: +moment()
               .subtract(0, 'days')
