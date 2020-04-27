@@ -35,6 +35,7 @@ export class AuthService {
         try {
 
           var password = bcrypt.hashSync(password, salt);
+          console.log(password);
           let data = {
             username,
             password,
@@ -186,10 +187,14 @@ export class AuthService {
   async changePassword(req) {
     let host = req.body.host;
     let username = req.body.username;
-    let password = req.body.password;
-    let newPassword = req.body.newpassword;
+     let password = bcrypt.hashSync(req.body.password, salt);
+     let newPassword = bcrypt.hashSync(req.body.newpassword, salt);
+
+    console.log(password);
+    console.log(newPassword);
     try {
       const res = await this.um.findOneAndUpdate({ username,password, host },{password:newPassword}).exec();
+      console.log(res);
       if (res !== null) {
         await this.sendEmailPassword(username, newPassword, req);
         return true;
