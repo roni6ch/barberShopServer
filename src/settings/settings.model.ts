@@ -31,6 +31,7 @@ export interface Settings extends mongoose.Document {
   slides: number;
   calendarSize: number;
   showPrices: boolean;
+  showTimes: boolean;
 }
 
  interface Day {
