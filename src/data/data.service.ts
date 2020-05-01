@@ -157,7 +157,7 @@ export class DataService {
           subject: resSettings.i18n['En'].contact.subject + contact.name,
           text: contact.message + ' from: ' + contact.phone,
         };
-     /*  let res = await transporter.sendMail(message);
+        /*  let res = await transporter.sendMail(message);
         if (res) {
           console.log('Email succsess!');
           return true;
@@ -178,101 +178,84 @@ export class DataService {
     }
   }
 
-
   async setHour(data, req) {
     let host = req.body.host;
     let res = await this.dm.findOne({ dayTimestamp: +data.date, host }).exec();
     let hours = [];
-      //loop hours
-    if (res && res.hours){
-      console.log(res.hours);
+    //loop hours
+    //algorythem - formula => 1/admin cal ( = num of curters ) X treatment time = loops
+    if (res && res.hours) {
       let found = false;
-      let loops = 4 / +data.treatmentTime;
-        hours = res.hours.map((v, i) => {
-        if (v.hour === data.hour || found) {
-          found = true;
+      let loops = 4 * +data.treatmentTime;
+      console.log(loops);
+      hours = res.hours.map((v, i) => {
+        if (v.hour === data.hour || found){
           v.available = false;
-          if (loops > 1){
-            loops -=1;
-          } else{
+          found = true;
+          loops -=1;
+          if (loops == 0)
             found = false;
-          }
         }
         return v;
       });
+      console.log(hours);
       const result = await this.dm
-          .updateOne({ _id: res._id }, { hours })
-          .exec();
-        if (result.n === 0) {
-          this.log('error', 'DataService -> setHour() in -> result = 0');
-          return false;
-        } else {
-          console.log('updated!!!');
-          return true;
-        }
+        .updateOne({ _id: res._id }, { hours })
+        .exec();
+      if (result.n === 0) {
+        this.log('error', 'DataService -> setHour() in -> result = 0'); 
+        return false;
+      } else {
+        console.log('updated!!!');
+        return true;
+      }
     } else {
       this.addCalendarDay(data, req);
       return true;
     }
   }
 
-
   async addCalendarDay(data, req) {
     let host = req.body.host;
     console.log('new day -> create one');
     let hours = [];
     let resSettings = await this.s.getSettingsFromDB(req);
-    let hoursSettings = resSettings.calendar.days[moment(+data.date).day() % 7].hours;
-    if (resSettings) {
-      let timeSpacing = resSettings.calendar.timeSpacing;
-      let minutesArr = ["00"];
-      if (timeSpacing == '0.25') minutesArr = ["00", "15", "30", "45"];
-      else if(timeSpacing == '0.5') minutesArr = ["00", "30"];
-      let addedHour = 0;
-
-      let loopNotAvailableTimes = 0;
-      let startLoop = false;
-      for (let h = 0; h < hoursSettings.length - addedHour; h++) { // if the same hour and minut then start count
-        ["00", "15", "30", "45"].forEach((minutes) => {
-            if (hoursSettings[h] == data.hour.split(":")[0] && minutes == data.hour.split(":")[1]){
-              loopNotAvailableTimes = 4 / +data.treatmentTime;
-              startLoop = true;
-            }
-            hours.push({
-              hour: `${hoursSettings[h]}:${minutes}`,
-              available: !startLoop ? true : false,
-            });
-            if (startLoop){
-              loopNotAvailableTimes -= 1;
-              console.log('loop times',loopNotAvailableTimes);
-              if (loopNotAvailableTimes == 0){
-                startLoop = false;
-              }
-            }
-            
-          });
-      }
-
-      const newCalendarDay = new this.dm({
-        dayTimestamp: data.date,
-        available: true,
-        hours,
-        host,
+    let hoursSettings =
+      resSettings.calendar.days[moment(+data.date).day() % 7].hours;
+    hoursSettings.forEach((hour, i) => {
+      hour = hour.length == 1 ? '0' + hour : hour;
+      ['00', '15', '30', '45'].forEach(minutes => {
+        hours.push({
+          hour: `${hour}:${minutes}`,
+          available: true,
+        });
       });
-      try {
-        let result = await newCalendarDay.save();
-        if (result.n === 0) {
-          this.log('error', `DataService -> addCalendarDay() => empty res`);
+    });
+    const newCalendarDay = new this.dm({
+      dayTimestamp: data.date,
+      available: true,
+      hours,
+      host,
+    });
+    try {
+      let result = await newCalendarDay.save();
+      if (result.n === 0) {
+        this.log('error', `DataService -> addCalendarDay() => empty res`);
+        return false;
+      } else {
+        //save new day - so set hour
+        if (await this.setHour(data, req)) return true;
+        else {
+          this.log('error', `DataService ->  addCalendarDay setHour()`);
           return false;
         }
-        return result;
-      } catch (error) {
-        this.log('error', `DataService -> addCalendarDay() => ${error}`);
-        return new HttpException(
-          'ExceptionFailed',
-          HttpStatus.EXPECTATION_FAILED,
-        );
       }
+    } catch (error) {
+      this.log('error', `DataService -> addCalendarDay() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
     }
   }
 
