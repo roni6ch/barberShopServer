@@ -21,7 +21,7 @@ export class AdminController {
   }
   
   @Post('uploadImages')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('image'))
   async uploadImages(@UploadedFile() file,@Req() req){
     return await this.as.uploadImages(file,req);
   }

@@ -76,17 +76,23 @@ export class DataService {
     try {
       let res = await this.dm.findOne({ dayTimestamp: data.date, host });
       if (res) {
-        let resHours = res.hours.map((v, i) => {
-          if (v.hour === data.hour) {
+        let hours = [];
+        let found = false;
+        let loops = 4 * +data.treatmentTime; 
+        console.log('loops',loops);
+        hours = res.hours.map((v, i) => {
+          if (v.hour === data.hour || found){
             v.available = true;
+            found = true;
+            loops -=1;
+            if (loops == 0)
+              found = false;
           }
           return v;
         });
-        res.hours = resHours;
-
         try {
           let result = await this.dm
-            .updateOne({ _id: res._id }, { hours: resHours })
+            .updateOne({ _id: res._id }, { hours })
             .exec();
           if (result.n === 0) {
             this.log('error', `DataService -> updateOne() => empty res`);
@@ -187,7 +193,7 @@ export class DataService {
     if (res && res.hours) {
       let found = false;
       let loops = 4 * +data.treatmentTime;
-      console.log(loops);
+      console.log('loops',loops);
       hours = res.hours.map((v, i) => {
         if (v.hour === data.hour || found){
           v.available = false;
@@ -198,7 +204,6 @@ export class DataService {
         }
         return v;
       });
-      console.log(hours);
       const result = await this.dm
         .updateOne({ _id: res._id }, { hours })
         .exec();

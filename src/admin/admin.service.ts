@@ -10,6 +10,9 @@ import { Settings } from 'src/settings/settings.model';
 import { Auth } from 'src/auth/auth.model';
 import * as moment from 'moment';
  
+var multer  = require('multer')
+var upload = multer({ dest: 'upload/' })
+
 var cloudinary = require('cloudinary').v2;
 cloudinary.config({
   cloud_name: constants.cloudinary.cloudName,
@@ -30,7 +33,8 @@ export class AdminService {
 
   async uploadImages(file, req) {
     console.log('file',file);
-   await cloudinary.uploader.upload('http://localhost:4200/upload/' + file.originalname.trim(),{ resource_type: "image", public_id: "testVid" })
+    await upload.single('image');
+   /*await cloudinary.uploader.upload(file.originalname.trim(),{ resource_type: "image", public_id: "testVid" })
     .then(function (image) {
       console.log("* " + image.public_id);
       console.log("* " + image.url);
@@ -40,7 +44,7 @@ export class AdminService {
       console.log("** File Upload (Promise)");
       if (err) { console.warn(err); }
       return err;
-    });
+    });*/
   }
 
   async getMyTreatments(req) {

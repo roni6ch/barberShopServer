@@ -15,6 +15,7 @@ import * as winston from 'winston';
 import { CustomerController } from './customers/customer.controller';
 import { SettingsModule } from './settings/settings.module';
 import { SettingsService } from './settings/settings.service';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -23,6 +24,9 @@ import { SettingsService } from './settings/settings.service';
     AuthModule,
     AdminModule,
     SettingsModule,
+    MulterModule.register({
+      dest: '/upload',
+    }),
     WinstonModule.forRoot({
       format: winston.format.json(),
       defaultMeta: { service: 'user-service' },
