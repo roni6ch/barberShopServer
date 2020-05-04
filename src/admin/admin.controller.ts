@@ -1,6 +1,18 @@
-import { Controller, Put, Query,  Inject, Get, Post, Body, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Put, Query,  Inject, Get, Post, Body, Req, UploadedFile, UseInterceptors, Res } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+var multer  = require('multer');
+
+var upload = multer({ storage: storage })
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './upload')
+  },
+  filename: function (req, file, cb) {
+    cb(null, "image-" + +new Date() + file.originalname)
+  }
+})
 
 @Controller('admin')
 export class AdminController {
@@ -21,9 +33,23 @@ export class AdminController {
   }
   
   @Post('uploadImages')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    //FileInterceptor('image')
+    FileInterceptor('image', {
+      storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, './upload')
+        },
+        filename: function (req, file, cb) {
+          cb(null, +new Date() +  "-" + file.originalname)
+        }
+      })
+    })
+  )
   async uploadImages(@UploadedFile() file,@Req() req){
-    return await this.as.uploadImages(file,req);
+    console.log(file);
+     await upload.single(file);
+   // return await this.as.uploadImages(file,req);
   }
 
   @Put()

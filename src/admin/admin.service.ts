@@ -9,9 +9,6 @@ import { SettingsService } from 'src/settings/settings.service';
 import { Settings } from 'src/settings/settings.model';
 import { Auth } from 'src/auth/auth.model';
 import * as moment from 'moment';
- 
-var multer  = require('multer')
-var upload = multer({ dest: 'upload/' })
 
 var cloudinary = require('cloudinary').v2;
 cloudinary.config({
@@ -33,7 +30,6 @@ export class AdminService {
 
   async uploadImages(file, req) {
     console.log('file',file);
-    await upload.single('image');
    /*await cloudinary.uploader.upload(file.originalname.trim(),{ resource_type: "image", public_id: "testVid" })
     .then(function (image) {
       console.log("* " + image.public_id);
