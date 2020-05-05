@@ -5,7 +5,6 @@ export const SettingsSchema = new mongoose.Schema({
   owner: { type: {} },
   personals: { type: Array },
   treatmentTimes: { type: Array },
-  mail: { type: {} },
   gallery: { type: Array },
   galleryDisplay : { type: String },
   instagramLink : { type: String },
@@ -17,8 +16,7 @@ export interface Settings extends mongoose.Document {
   owner: Owner;
   personals: Personals[];
   treatmentTimes: string[];
-  mail: string;
-  gallery: string[];
+  gallery: Image[];
   galleryDisplay : string;
   instagramLink : string;
   i18n: {};
@@ -33,6 +31,11 @@ export interface Settings extends mongoose.Document {
   showPrices: boolean;
   showTimes: boolean;
 }
+interface Image {
+  id:string;
+  url:string;
+}
+
 
  interface Day {
   day: string;
@@ -50,7 +53,12 @@ interface DaysOff {
 
  interface Owner {
   phone: string;
-  whatsapp: string;
+  mail: string;
+  location: string;
+  website: string;
+  logo: string;
+  video: string;
+  BG: string;
 }
 interface Personals {
   gender: string;

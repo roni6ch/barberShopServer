@@ -9,6 +9,8 @@ import { SettingsService } from 'src/settings/settings.service';
 import { Settings } from 'src/settings/settings.model';
 import { Auth } from 'src/auth/auth.model';
 import * as moment from 'moment';
+const fs = require('fs');
+
 
 var cloudinary = require('cloudinary').v2;
 cloudinary.config({
@@ -29,18 +31,43 @@ export class AdminService {
   ) {}
 
   async uploadImages(file, req) {
+    //Thanks to Leonied!!!
     console.log('file',file);
-   /*await cloudinary.uploader.upload(file.originalname.trim(),{ resource_type: "image", public_id: "testVid" })
-    .then(function (image) {
-      console.log("* " + image.public_id);
-      console.log("* " + image.url);
+    let settings = await this.s.getSettingsFromDB(req);
+    let ownerMail = settings.owner.mail;
+   await cloudinary.uploader.upload(file.path,{ folder: ownerMail,resource_type: "image", public_id: file.originalname.split(".")[0] })
+    .then(async (image) => {
+      console.log('image uploaded to cloudinary!!! ');
+      console.log(image);
+      //add it to admin db
+      await this.s.setUserImages({...image,name: file.originalname},req);
+
+      //remove local image from server
+      fs.unlink(file.path, (err) => {
+        if (err) throw err;
+      });
+
       return image;
     })
-    .catch(function (err) {
+    .catch( (err) =>{
       console.log("** File Upload (Promise)");
       if (err) { console.warn(err); }
       return err;
-    });*/
+    });
+
+  }
+
+  async deleteImage(id, req){
+    let settings = await this.s.getSettingsFromDB(req);
+    let ownerMail = settings.owner.mail;
+    await cloudinary.uploader.destroy(ownerMail + '/' + id.split(".")[0], async (result) => {
+      await this.s.removeUserImage(id,req);
+      return true;
+    }).catch((err) => {
+      console.log("** File deleteImage");
+      if (err) { console.warn(err); }
+      return err;
+    });;
   }
 
   async getMyTreatments(req) {

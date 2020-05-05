@@ -41,16 +41,23 @@ export class AdminController {
           cb(null, './upload')
         },
         filename: function (req, file, cb) {
+          console.log(file.originalname);
           cb(null, +new Date() +  "-" + file.originalname)
         }
       })
     })
   )
   async uploadImages(@UploadedFile() file,@Req() req){
-    console.log(file);
      await upload.single(file);
-   // return await this.as.uploadImages(file,req);
+     return await this.as.uploadImages(file,req);
   }
+
+  @Post('deleteImage')
+  async deleteImage(@Body('id') id: string,@Req() req){
+    return await this.as.deleteImage(id,req);
+ }
+
+  
 
   @Put()
   async setAvailability(
