@@ -71,7 +71,7 @@ export class AdminService {
   }
 
   async getMyTreatments(req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     try {
       let res = await this.cm.find({
         host,
@@ -96,7 +96,6 @@ export class AdminService {
   }
 
   async checkPermissions(req) {
-    let host = req.body.host;
     try {
       let res = await this.s.getSettingsFromDB(req);
       if (res)
@@ -146,7 +145,7 @@ export class AdminService {
 
   async updateAdmin(adminDetails, req) {
     console.log(adminDetails);
-    let host = req.body.host;
+    let host = req.headers.origin;
     try {
       let result = await this.sm
         .findOneAndUpdate(

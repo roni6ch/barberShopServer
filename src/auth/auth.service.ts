@@ -27,7 +27,7 @@ export class AuthService {
   ) {}
 
   async register(username, password, req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     username = username.toLowerCase();
     try {
       let findUser = await this.um.findOne({ username, host }).exec();
@@ -75,7 +75,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string, req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     username = username.toLowerCase();
     const user = await this.um.findOne({ username, host }).exec();
     if (user !== null) {
@@ -90,7 +90,7 @@ export class AuthService {
   }
 
   async validateGoogleUser(username: string, req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     username = username.toLowerCase();
     let password = Math.random()
       .toString(36)
@@ -100,6 +100,7 @@ export class AuthService {
       password, //password generator
       host,
     };
+    console.log(data);
     const user = await this.um.findOne({ username, host }).exec();
     if (!user) {
       try {
@@ -118,7 +119,6 @@ export class AuthService {
   }
 
   async sendEmailPassword(contact, password, req) {
-    let host = req.body.host;
     try {
       let resSettings = await this.s.getSettingsFromDB(req);
       if (resSettings) {
@@ -167,7 +167,7 @@ export class AuthService {
     };
   }
   async forgotPassword(username, req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     try {
       const user = await this.um.findOne({ username, host }).exec();
       if (user !== null) {
@@ -185,7 +185,7 @@ export class AuthService {
   }
 
   async changePassword(req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     let username = req.body.username;
      let password = bcrypt.hashSync(req.body.password, salt);
      let newPassword = bcrypt.hashSync(req.body.newpassword, salt);

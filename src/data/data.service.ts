@@ -24,7 +24,7 @@ export class DataService {
     private s: SettingsService,
   ) {}
   async getData(req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     let calendar = [];
     var weekStart = moment()
       .clone()
@@ -72,7 +72,7 @@ export class DataService {
     }
   }
   async deleteHour(data: Customer, req) {
-    let host = req.body.host;
+    let host =req.headers.origin;
     try {
       let res = await this.dm.findOne({ dayTimestamp: data.date, host });
       if (res) {
@@ -151,7 +151,6 @@ export class DataService {
     }
   }
   async sendContact(contact, req) {
-    let host = req.body.host;
     //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
 
     try {
@@ -185,7 +184,7 @@ export class DataService {
   }
 
   async setHour(data, req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     let res = await this.dm.findOne({ dayTimestamp: +data.date, host }).exec();
     let hours = [];
     //loop hours
@@ -221,7 +220,7 @@ export class DataService {
   }
 
   async addCalendarDay(data, req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     console.log('new day -> create one');
     let hours = [];
     let resSettings = await this.s.getSettingsFromDB(req);
@@ -265,7 +264,7 @@ export class DataService {
   }
 
   async userDetails(req) {
-    let host = req.body.host;
+    let host = req.headers.origin;
     let username = req.body.username;
     try {
       const user = await this.cm
