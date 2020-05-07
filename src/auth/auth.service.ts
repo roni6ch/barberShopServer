@@ -27,7 +27,8 @@ export class AuthService {
   ) {}
 
   async register(username, password, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
+    console.log(host);
     username = username.toLowerCase();
     try {
       let findUser = await this.um.findOne({ username, host }).exec();
@@ -35,7 +36,6 @@ export class AuthService {
         try {
 
           var password = bcrypt.hashSync(password, salt);
-          console.log(password);
           let data = {
             username,
             password,
@@ -75,7 +75,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     username = username.toLowerCase();
     const user = await this.um.findOne({ username, host }).exec();
     if (user !== null) {
@@ -90,7 +90,7 @@ export class AuthService {
   }
 
   async validateGoogleUser(username: string, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     username = username.toLowerCase();
     let password = Math.random()
       .toString(36)
@@ -120,7 +120,7 @@ export class AuthService {
 
   async sendEmailPassword(contact, password, req) {
     try {
-      let resSettings = await this.s.getSettingsFromDB(req);
+      let resSettings = await this.s.getSettings();
       if (resSettings) {
         const message = {
           from: resSettings.owner.mail,
@@ -167,7 +167,7 @@ export class AuthService {
     };
   }
   async forgotPassword(username, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     try {
       const user = await this.um.findOne({ username, host }).exec();
       if (user !== null) {
@@ -185,7 +185,7 @@ export class AuthService {
   }
 
   async changePassword(req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     let username = req.body.username;
      let password = bcrypt.hashSync(req.body.password, salt);
      let newPassword = bcrypt.hashSync(req.body.newpassword, salt);

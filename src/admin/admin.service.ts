@@ -33,7 +33,7 @@ export class AdminService {
   async uploadImages(file, req) {
     //Thanks to Leonied!!!
     console.log('file',file);
-    let settings = await this.s.getSettingsFromDB(req);
+    let settings = await this.s.getSettings();
     let ownerMail = settings.owner.mail;
    await cloudinary.uploader.upload(file.path,{ folder: ownerMail,resource_type: "image", public_id: file.originalname.split(".")[0] })
     .then(async (image) => {
@@ -58,7 +58,7 @@ export class AdminService {
   }
 
   async deleteImage(id, req){
-    let settings = await this.s.getSettingsFromDB(req);
+    let settings = await this.s.getSettings();
     let ownerMail = settings.owner.mail;
     await cloudinary.uploader.destroy(ownerMail + '/' + id.split(".")[0], async (result) => {
       await this.s.removeUserImage(id,req);
@@ -71,7 +71,7 @@ export class AdminService {
   }
 
   async getMyTreatments(req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     try {
       let res = await this.cm.find({
         host,
@@ -97,7 +97,7 @@ export class AdminService {
 
   async checkPermissions(req) {
     try {
-      let res = await this.s.getSettingsFromDB(req);
+      let res = await this.s.getSettings();
       if (res)
         if (
           req.body.username.toLowerCase() === res.owner.mail.toLowerCase()
@@ -116,6 +116,27 @@ export class AdminService {
         }
     } catch (error) {
       this.log('error', `AdminService -> checkPermissions() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+
+  async checkHostPermissions(req){
+    try {
+          let res = await this.am.find({ username: req.body.username , host: this.s.adminName });
+          if (res.length > 0) return true;
+          else {
+            this.log(
+              'error',
+              'SettingsService -> checkHostPermissions() in -> else res',
+            );
+            return false;
+          }
+    } catch (error) {
+      this.log('error', `SettingsService -> checkHostPermissions() => ${error}`);
       return new HttpException(
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
@@ -144,8 +165,7 @@ export class AdminService {
 
 
   async updateAdmin(adminDetails, req) {
-    console.log(adminDetails);
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     try {
       let result = await this.sm
         .findOneAndUpdate(
@@ -165,9 +185,8 @@ export class AdminService {
           },
         )
         .exec();
-      console.log(result);
       if (result) {
-        this.s.settings = null;
+        //this.s.settings = null;
         return result;
       } else {
         this.log('error', 'DataService -> updateAdmin() in -> else res');

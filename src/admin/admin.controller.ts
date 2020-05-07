@@ -26,6 +26,12 @@ export class AdminController {
   async checkPermissions(@Req() req){
     return await this.as.checkPermissions(req);
   }
+
+
+  @Post('checkHostPermissions')
+  async checkHostPermissions(@Req() req) : Promise<any>{
+    return await this.as.checkHostPermissions(req); 
+  }
   
   @Post('updateAdmin')
   async updateAdmin(@Body() adminDetails,@Req() req){

@@ -2,23 +2,28 @@ import { Injectable, HttpStatus, HttpException, Logger, Inject } from '@nestjs/c
 import { InjectModel } from '@nestjs/mongoose';
 import { Settings } from './settings.model';
 import { Model } from 'mongoose';
+import { Auth } from 'src/auth/auth.model';
 
 @Injectable()
 export class SettingsService {
   settings : Settings = null;
+  public adminName = "";
   constructor(
     @InjectModel('Settings') private readonly sm: Model<Settings>,
     @Inject('winston') private readonly logger: Logger,
   ) {
   }
 
-  async getSettingsFromDB(req) {
+  getSettings(){
     if (this.settings !== null){
       return this.settings;
     }
-    let host = req.headers.origin;
+  }
+  async getSettingsFromDB(adminName) {
+    this.adminName = adminName;
+    console.log('adminName',adminName);
     try {
-      let res = await this.sm.findOne({ 'owner.website' : host }).exec();
+      let res = await this.sm.findOne({ 'owner.website' : adminName }).exec();
       if (res) {this.settings = res;
         return res;}
       else {
@@ -34,10 +39,10 @@ export class SettingsService {
     }
   }
 
+
   async setUserImages(imageObj,req){
-    let host = req.headers.origin;
     try {
-      let res = await this.sm.findOneAndUpdate({ 'owner.website': host } , { $push: { gallery: {id: imageObj.name.split(".")[0].trim(),url:imageObj.secure_url} } }, {new: true}).exec();
+      let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName } , { $push: { gallery: {id: imageObj.name.split(".")[0].trim(),url:imageObj.secure_url} } }, {new: true}).exec();
       if (res) {
         this.settings.gallery = res.gallery;
         return true;
@@ -55,9 +60,8 @@ export class SettingsService {
     }
   }
   async removeUserImage(id,req){
-    let host = req.headers.origin;
     try {
-      let res = await this.sm.findOneAndUpdate({ 'owner.website': host } , { $pull: { gallery: {id : id.split(".")[0].trim()} } }).exec();
+      let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName } , { $pull: { gallery: {id : id.split(".")[0].trim()} } }).exec();
       if (res) {return res;}
       else {
         this.log('error', 'SettingsService -> removeUserImage() in -> else res');

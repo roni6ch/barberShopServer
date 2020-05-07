@@ -24,13 +24,13 @@ export class DataService {
     private s: SettingsService,
   ) {}
   async getData(req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     let calendar = [];
     var weekStart = moment()
       .clone()
       .startOf('week');
 
-    let res = await this.s.getSettingsFromDB(req);
+    let res = await this.s.getSettings();
     if (res) {
       for (
         let i = 0;
@@ -72,7 +72,7 @@ export class DataService {
     }
   }
   async deleteHour(data: Customer, req) {
-    let host =req.headers.origin;
+    let host =this.s.adminName;
     try {
       let res = await this.dm.findOne({ dayTimestamp: data.date, host });
       if (res) {
@@ -154,7 +154,7 @@ export class DataService {
     //https://stackoverflow.com/questions/45478293/username-and-password-not-accepted-when-using-nodemailer
 
     try {
-      let resSettings = await this.s.getSettingsFromDB(req);
+      let resSettings = await this.s.getSettings();
       if (resSettings) {
         const message = {
           from: contact.mail,
@@ -184,7 +184,7 @@ export class DataService {
   }
 
   async setHour(data, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     let res = await this.dm.findOne({ dayTimestamp: +data.date, host }).exec();
     let hours = [];
     //loop hours
@@ -220,10 +220,10 @@ export class DataService {
   }
 
   async addCalendarDay(data, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     console.log('new day -> create one');
     let hours = [];
-    let resSettings = await this.s.getSettingsFromDB(req);
+    let resSettings = await this.s.getSettings();
     let hoursSettings =
       resSettings.calendar.days[moment(+data.date).day() % 7].hours;
     hoursSettings.forEach((hour, i) => {
@@ -264,7 +264,7 @@ export class DataService {
   }
 
   async userDetails(req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     let username = req.body.username;
     try {
       const user = await this.cm

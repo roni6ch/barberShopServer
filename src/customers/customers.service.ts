@@ -60,7 +60,7 @@ export class CustomersService {
   }
 
   async addTreatment(customer, req) {
-    customer.host = req.headers.origin;
+    customer.host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
     const newTreatment = new this.cm(customer);
     try {
@@ -77,7 +77,7 @@ export class CustomersService {
     }
   }
   async editTreatment(customer, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
     console.log(customer);
     let _id = customer._id;
@@ -99,7 +99,7 @@ export class CustomersService {
   
 
   async deleteTreatment(data: Customer, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     try {
       let res = await this.cm.deleteOne({ _id: data['_id'], host }).exec();
       if (res.n > 0) {
@@ -119,7 +119,7 @@ export class CustomersService {
 
   async sendUserMail(data, req , schedule) {
     try {
-      let resSettings = await this.s.getSettingsFromDB(req);
+      let resSettings = await this.s.getSettings();
       let i18n = resSettings.i18n[data.lang].calendar;
       if (resSettings) {
         const message = {
@@ -163,7 +163,7 @@ export class CustomersService {
 
 
   async userTreatments(req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     let username = req.body.username;
     try {
       let res = await this.cm
@@ -192,7 +192,7 @@ export class CustomersService {
   }
 
   async userTreatmentsOld(req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     let username = req.body.username;
     try {
       let res = await this.cm
@@ -220,7 +220,7 @@ export class CustomersService {
     }
   }
   async adminSearchTreatmentsOld(param, req) {
-    let host = req.headers.origin;
+    let host = this.s.adminName;
     try {
       let res = await this.cm
         .find({
