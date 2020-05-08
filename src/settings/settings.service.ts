@@ -21,7 +21,6 @@ export class SettingsService {
   }
   async getSettingsFromDB(adminName) {
     this.adminName = adminName;
-    console.log('adminName',adminName);
     try {
       let res = await this.sm.findOne({ 'owner.website' : adminName }).exec();
       if (res) {this.settings = res;

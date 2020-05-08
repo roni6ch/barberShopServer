@@ -28,7 +28,6 @@ export class AuthService {
 
   async register(username, password, req) {
     let host = this.s.adminName;
-    console.log(host);
     username = username.toLowerCase();
     try {
       let findUser = await this.um.findOne({ username, host }).exec();
@@ -100,7 +99,6 @@ export class AuthService {
       password, //password generator
       host,
     };
-    console.log(data);
     const user = await this.um.findOne({ username, host }).exec();
     if (!user) {
       try {
@@ -190,11 +188,8 @@ export class AuthService {
      let password = bcrypt.hashSync(req.body.password, salt);
      let newPassword = bcrypt.hashSync(req.body.newpassword, salt);
 
-    console.log(password);
-    console.log(newPassword);
     try {
       const res = await this.um.findOneAndUpdate({ username,password, host },{password:newPassword}).exec();
-      console.log(res);
       if (res !== null) {
         await this.sendEmailPassword(username, newPassword, req);
         return true;
