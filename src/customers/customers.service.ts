@@ -8,7 +8,7 @@ import { SettingsService } from 'src/settings/settings.service';
 import { constants } from 'src/constants';
 
 var nodemailer = require('nodemailer');
-var jwt = require('jsonwebtoken');
+const hbs = require('nodemailer-express-handlebars');
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -17,6 +17,19 @@ var transporter = nodemailer.createTransport({
     pass: constants.mail.pass,
   },
 });
+
+const handlebarOptions = {
+  viewEngine: {
+    extName: '.hbs',
+    partialsDir: './emails/customer',
+    layoutsDir: './emails/customer',
+    defaultLayout: 'index.hbs',
+  },
+  viewPath: './emails/customer',
+  extName: '.hbs',
+};
+
+transporter.use('compile', hbs(handlebarOptions));
 
 @Injectable()
 export class CustomersService {
@@ -124,14 +137,16 @@ export class CustomersService {
           from: resSettings.owner.mail,
           to: data.username,
           subject: 'Message from: ' + resSettings.owner.website,
-          text:`${i18n.modal.yourAppointmentTxt}, ${i18n.modal.at} 
-          ${data.hour} ${i18n.modal.at} 
-          ${i18n.titleH1} ${i18n.titleH1span} - 
-          ${i18n.modal.for} ${data.haircut} 
-           ${schedule? i18n.modal.appointmentScheduled :i18n.modal.appointmentCanceled}`
-
+          context: {
+            data,
+            i18n,
+            schedule: schedule? i18n.modal.appointmentScheduled :i18n.modal.appointmentCanceled
+        },
+        template: 'index',
         };
-       /* let res = await transporter.sendMail(message);
+
+
+        let res = await transporter.sendMail(message);
         if (res) {
           console.log('Email succsess!');
           return true;
@@ -141,7 +156,7 @@ export class CustomersService {
             'CustomersService -> sendUserMail() in -> else res',
           );
           return false;
-        }*/
+        }
       } else {
         this.log(
           'error',

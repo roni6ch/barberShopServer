@@ -14,8 +14,14 @@ export class HttpMiddleware implements NestMiddleware {
         return res.status(401).send('Unauthorized request - null token');    
       }
       let payload = await jwt.verify(token, constants.jwtSecret,(err, decoded) => {
+        console.log(decoded);
+        if (typeof (decoded) !== "undefined" && typeof (decoded.username) !== "undefined"){
         req.body.username = decoded.username;
           return decoded;
+        }else{
+          console.log("false");
+          return false;
+        }
       });
       if(!payload) {
         return res.status(401).send('Unauthorized payload request');    

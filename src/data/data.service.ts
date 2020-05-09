@@ -8,6 +8,7 @@ import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
 import { Inject, HttpException, HttpStatus, Req } from '@nestjs/common';
+const hbs = require('nodemailer-express-handlebars');
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -15,6 +16,21 @@ var transporter = nodemailer.createTransport({
     pass: constants.mail.pass,
   },
 });
+
+
+const handlebarOptions = {
+  viewEngine: {
+    extName: '.hbs',
+    partialsDir: './emails/contact',
+    layoutsDir: './emails/contact',
+    defaultLayout: 'index.hbs',
+  },
+  viewPath: './emails/contact',
+  extName: '.hbs',
+};
+
+transporter.use('compile', hbs(handlebarOptions));
+
 
 export class DataService {
   constructor(
@@ -156,20 +172,26 @@ export class DataService {
     try {
       let resSettings = await this.s.getSettings();
       if (resSettings) {
+        let i18n = resSettings.i18n[data.lang].calendar;
         const message = {
           from: contact.mail,
           to: resSettings.owner.mail,
           subject: resSettings.i18n['En'].contact.subject + contact.name,
           text: contact.message + ' from: ' + contact.phone,
+          context: {
+            contact,
+            i18n,
+        },
+        template: 'index',
         };
-        /*  let res = await transporter.sendMail(message);
+          let res = await transporter.sendMail(message);
         if (res) {
           console.log('Email succsess!');
           return true;
         } else {
           this.log('error', 'DataService -> sendContact() in -> else res');
           return false;
-        }*/
+        }
       } else {
         this.log('error', `DataService -> sendContact() => no owner mail`);
         return false;
