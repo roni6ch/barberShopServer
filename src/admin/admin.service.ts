@@ -11,7 +11,6 @@ import { Auth } from 'src/auth/auth.model';
 import * as moment from 'moment';
 const fs = require('fs');
 
-
 var cloudinary = require('cloudinary').v2;
 cloudinary.config({
   cloud_name: constants.cloudinary.cloudName,
@@ -32,43 +31,152 @@ export class AdminService {
 
   async uploadImages(file, req) {
     //Thanks to Leonied!!!
-    console.log('file',file);
+    console.log('file', file);
     let settings = await this.s.getSettings();
     let ownerMail = settings.owner.mail;
-   await cloudinary.uploader.upload(file.path,{ folder: ownerMail,resource_type: "image", public_id: file.originalname.split(".")[0] })
-    .then(async (image) => {
-      console.log('image uploaded to cloudinary!!! ');
-      console.log(image);
-      //add it to admin db
-      await this.s.setUserImages({...image,name: file.originalname},req);
+    await cloudinary.uploader
+      .upload(file.path, {
+        folder: ownerMail,
+        resource_type: 'image',
+        public_id: file.originalname.split('.')[0],
+      })
+      .then(async image => {
+        console.log('image uploaded to cloudinary!!! ');
+        console.log(image);
+        //add it to admin db
+        await this.s.setUserImages({ ...image, name: file.originalname }, req);
 
-      //remove local image from server
-      fs.unlink(file.path, (err) => {
-        if (err) throw err;
+        //remove local image from server
+        fs.unlink(file.path, err => {
+          if (err) throw err;
+        });
+
+        return image;
+      })
+      .catch(err => {
+        console.log('** File Upload (Promise)');
+        if (err) {
+          console.warn(err);
+        }
+        return err;
       });
-
-      return image;
-    })
-    .catch( (err) =>{
-      console.log("** File Upload (Promise)");
-      if (err) { console.warn(err); }
-      return err;
-    });
-
   }
 
-  async deleteImage(id, req){
+
+  async uploadLogo(file, req) {
+    let settings = await this.s.getSettings();
+   let ownerMail = settings.owner.mail;
+   await cloudinary.uploader
+      .upload(file.path, {
+        folder: ownerMail,
+        resource_type: 'image',
+        public_id: 'logo',
+      })
+      .then(async image => {
+        console.log('logo uploaded to cloudinary!!! ');
+        console.log(image);
+        //add it to admin db
+        await this.s.setUserLogo({ ...image, name: file.originalname }, req);
+
+        //remove local image from server
+        fs.unlink(file.path, err => {
+          if (err) throw err;
+        });
+
+        return true;
+      })
+      .catch(err => {
+        console.log('** File Upload (Promise)');
+        if (err) {
+          console.warn(err);
+        }
+        return err;
+      });
+  }
+  async uploadBG(file, req) {
+    let settings = await this.s.getSettings();
+   let ownerMail = settings.owner.mail;
+   await cloudinary.uploader
+      .upload(file.path, {
+        folder: ownerMail,
+        resource_type: 'image',
+        public_id: 'BG',
+      })
+      .then(async image => {
+        console.log('BG uploaded to cloudinary!!! ');
+        console.log(image);
+        //add it to admin db
+        await this.s.setUserBG({ ...image, name: file.originalname }, req);
+
+        //remove local image from server
+        fs.unlink(file.path, err => {
+          if (err) throw err;
+        });
+
+        return true;
+      })
+      .catch(err => {
+        console.log('** File Upload (Promise)');
+        if (err) {
+          console.warn(err);
+        }
+        return err;
+      });
+  }
+
+  
+  
+
+  async deleteImage(id, req) {
     let settings = await this.s.getSettings();
     let ownerMail = settings.owner.mail;
-    await cloudinary.uploader.destroy(ownerMail + '/' + id.split(".")[0], async (result) => {
-      await this.s.removeUserImage(id,req);
-      return true;
-    }).catch((err) => {
-      console.log("** File deleteImage");
-      if (err) { console.warn(err); }
-      return err;
-    });;
+    await cloudinary.uploader
+      .destroy(ownerMail + '/' + id.split('.')[0], async result => {
+        await this.s.removeUserImage(id, req);
+        return true;
+      })
+      .catch(err => {
+        console.log('** File deleteImage');
+        if (err) {
+          console.warn(err);
+        }
+        return err;
+      });
   }
+
+  async deleteLogo() {
+    let settings = await this.s.getSettings();
+    let ownerMail = settings.owner.mail;
+    await cloudinary.uploader
+      .destroy(ownerMail + '/logo', async result => {
+          await this.s.removeUserLogo();
+          return true;
+      })
+      .catch(err => {
+        console.log('** File deleteImage');
+        if (err) {
+          console.warn(err);
+        }
+        return err;
+      });
+  }
+  async deleteBG() {
+    let settings = await this.s.getSettings();
+    let ownerMail = settings.owner.mail;
+    await cloudinary.uploader
+      .destroy(ownerMail + '/BG', async result => {
+          await this.s.removeUserBG();
+          return true;
+      })
+      .catch(err => {
+        console.log('** File deleteImage');
+        if (err) {
+          console.warn(err);
+        }
+        return err;
+      });
+  }
+  
 
   async getMyTreatments(req) {
     let host = this.s.adminName;
@@ -99,9 +207,7 @@ export class AdminService {
     try {
       let res = await this.s.getSettings();
       if (res)
-        if (
-          req.body.username.toLowerCase() === res.owner.mail.toLowerCase()
-        ) {
+        if (req.body.username.toLowerCase() === res.owner.mail.toLowerCase()) {
           let res = await this.am.find({ username: req.body.username });
           if (res.length > 0) return true;
           else {
@@ -123,20 +229,25 @@ export class AdminService {
     }
   }
 
-
-  async checkHostPermissions(req){
+  async checkHostPermissions(req) {
     try {
-          let res = await this.am.find({ username: req.body.username , host: this.s.adminName });
-          if (res.length > 0) return true;
-          else {
-            this.log(
-              'error',
-              'SettingsService -> checkHostPermissions() in -> else res',
-            );
-            return false;
-          }
+      let res = await this.am.find({
+        username: req.body.username,
+        host: this.s.adminName,
+      });
+      if (res.length > 0) return true;
+      else {
+        this.log(
+          'error',
+          'SettingsService -> checkHostPermissions() in -> else res',
+        );
+        return false;
+      }
     } catch (error) {
-      this.log('error', `SettingsService -> checkHostPermissions() => ${error}`);
+      this.log(
+        'error',
+        `SettingsService -> checkHostPermissions() => ${error}`,
+      );
       return new HttpException(
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
@@ -160,9 +271,8 @@ export class AdminService {
         'ExceptionFailed',
         HttpStatus.EXPECTATION_FAILED,
       );
-    } 
+    }
   }
-
 
   async updateAdmin(adminDetails, req) {
     let host = this.s.adminName;

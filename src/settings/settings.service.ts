@@ -76,6 +76,76 @@ export class SettingsService {
     }
   }
 
+  async setUserLogo(imageObj,req){
+    try {
+      let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName }, {"owner.logo" : imageObj.secure_url}).exec();
+      if (res) {  return true;}
+      else {
+        this.log('error', 'SettingsService -> setUserImages() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `SettingsService -> setUserImages() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  async setUserBG(imageObj,req){
+    try {
+      let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName }, {"owner.BG" : imageObj.secure_url}).exec();
+      if (res) {  return true;}
+      else {
+        this.log('error', 'SettingsService -> setUserImages() in -> else res');
+        return false; 
+      }
+    } catch (error) {
+      this.log('error', `SettingsService -> setUserImages() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  
+
+  async removeUserLogo(){
+    try {
+      console.log('removeUserLogo' , this.adminName );
+      let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName } , {"owner.logo" : ""}).exec();
+      if (res) {return true;}
+      else {
+        this.log('error', 'SettingsService -> removeUserLogo() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `SettingsService -> removeUserLogo() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async removeUserBG(){
+    try {
+      let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName } , {"owner.BG" : ""}).exec();
+      if (res) {return true;}
+      else {
+        this.log('error', 'SettingsService -> removeUserBG() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `SettingsService -> removeUserBG() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  
+
   async getI18n(){
     try {
       let res = await this.sm.findOne({ 'owner.website': this.adminName },'i18n').exec();

@@ -1,4 +1,4 @@
-import { Controller, Put, Query,  Inject, Get, Post, Body, Req, UploadedFile, UseInterceptors, Res } from '@nestjs/common';
+import { Controller, Put, Query,  Inject, Get, Post, Body, Req, UploadedFile, UseInterceptors, Res, Delete } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 var multer  = require('multer');
@@ -62,6 +62,61 @@ export class AdminController {
   async deleteImage(@Body('id') id: string,@Req() req){
     return await this.as.deleteImage(id,req);
  }
+
+
+ @Post('uploadLogo')
+ @UseInterceptors(
+   FileInterceptor('image', {
+     storage: multer.diskStorage({
+       destination: function (req, file, cb) {
+         cb(null, './upload')
+       },
+       filename: function (req, file, cb) {
+         console.log(file.originalname);
+         cb(null, file.originalname)
+       }
+     })
+   })
+ )
+ async uploadLogo(@UploadedFile() file,@Req() req){
+    await upload.single(file);
+    return await this.as.uploadLogo(file,req);
+ }
+
+
+ 
+ @Post('uploadBG')
+ @UseInterceptors(
+   FileInterceptor('image', {
+     storage: multer.diskStorage({
+       destination: function (req, file, cb) {
+         cb(null, './upload')
+       },
+       filename: function (req, file, cb) {
+         console.log(file.originalname);
+         cb(null, file.originalname)
+       }
+     })
+   })
+ )
+ async uploadBG(@UploadedFile() file,@Req() req){
+    await upload.single(file);
+    return await this.as.uploadBG(file,req);
+ }
+
+
+
+
+ 
+ @Delete('deleteLogo')
+  async deleteLogo(){
+    return await this.as.deleteLogo();
+ }
+ @Delete('deleteBG')
+  async deleteBG(){
+    return await this.as.deleteBG();
+ }
+ 
 
   
 
