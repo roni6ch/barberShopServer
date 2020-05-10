@@ -16,6 +16,7 @@ import { CustomerController } from './customers/customer.controller';
 import { SettingsModule } from './settings/settings.module';
 import { SettingsService } from './settings/settings.service';
 import { MulterModule } from '@nestjs/platform-express';
+import { LPModule } from './lp/lp.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MulterModule } from '@nestjs/platform-express';
     AuthModule,
     AdminModule,
     SettingsModule,
+    LPModule,
     MulterModule.register({
       dest: '/upload',
     }),

@@ -21,6 +21,7 @@ export class SettingsService {
   }
   async getSettingsFromDB(adminName) {
     this.adminName = adminName;
+    console.log(adminName);
     try {
       let res = await this.sm.findOne({ 'owner.website' : adminName }).exec();
       if (res) {this.settings = res;
@@ -74,6 +75,33 @@ export class SettingsService {
       );
     }
   }
+
+  async getI18n(){
+    try {
+      let res = await this.sm.findOne({ 'owner.website': this.adminName },'i18n').exec();
+      if (res.i18n) {return res.i18n;}
+    } catch (error) {
+      this.log('error', `SettingsService -> getI18n() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  async setI18n(i18n){
+    try {
+      console.log(i18n);
+      let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName }, { $set: {i18n} } ).exec();
+      if (res) {return true;}
+    } catch (error) {
+      this.log('error', `SettingsService -> setI18n() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  
   log(type, data) {
     console.error(data);
     this.logger.log(type, data);

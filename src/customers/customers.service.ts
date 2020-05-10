@@ -140,7 +140,7 @@ export class CustomersService {
           context: {
             data,
             i18n,
-            schedule: schedule? i18n.modal.appointmentScheduled :i18n.modal.appointmentCanceled
+            schedule: schedule? i18n.appointmentScheduled :i18n.appointmentCanceled
         },
         template: 'index',
         };

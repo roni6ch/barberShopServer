@@ -21,11 +21,11 @@ var transporter = nodemailer.createTransport({
 const handlebarOptions = {
   viewEngine: {
     extName: '.hbs',
-    partialsDir: './emails/contact',
-    layoutsDir: './emails/contact',
-    defaultLayout: 'index.hbs',
+    partialsDir: './emails/customer',
+    layoutsDir: './emails/customer',
+    defaultLayout: 'contact.hbs',
   },
-  viewPath: './emails/contact',
+  viewPath: './emails/customer',
   extName: '.hbs',
 };
 
@@ -172,7 +172,7 @@ export class DataService {
     try {
       let resSettings = await this.s.getSettings();
       if (resSettings) {
-        let i18n = resSettings.i18n[data.lang].calendar;
+        let i18n = resSettings.i18n['He'].calendar;
         const message = {
           from: contact.mail,
           to: resSettings.owner.mail,
@@ -182,7 +182,7 @@ export class DataService {
             contact,
             i18n,
         },
-        template: 'index',
+        template: 'contact',
         };
           let res = await transporter.sendMail(message);
         if (res) {

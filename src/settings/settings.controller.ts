@@ -11,4 +11,13 @@ export class SettingsController {
   async getSettingsFromDB(@Body('adminName') adminName: string) : Promise<any>{
     return await this.settingsService.getSettingsFromDB(adminName); 
   }
+
+  @Get('i18n')
+  async getI18n() : Promise<any>{
+    return await this.settingsService.getI18n(); 
+  }
+  @Post('i18n')
+  async setI18n(@Body('i18n') i18n) : Promise<any>{
+    return await this.settingsService.setI18n(i18n); 
+  }
 }
