@@ -56,6 +56,7 @@ interface DaysOff {
   mail: string;
   location: string;
   website: string;
+  description:string;
   logo: string;
   video: string;
   BG: string;

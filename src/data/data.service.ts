@@ -292,6 +292,7 @@ export class DataService {
       const user = await this.cm
         .findOne(
           { username, host },
+          { _id: 0, id: 0},
         )
         .exec();
       if (user) {
