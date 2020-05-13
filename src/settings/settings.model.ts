@@ -44,10 +44,7 @@ interface Image {
 }
 
 interface DaysOff {
-  day: string;
-  numDay: string;
-  month: string;
-  year: string;
+  dateStr: string;
   timestamp: string;
 }
 
