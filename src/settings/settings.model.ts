@@ -26,6 +26,7 @@ export interface Settings extends mongoose.Document {
   timeSpacing:string;
   days : Day[];
   daysOff : DaysOff[];
+  holidays: Day[];
   slides: number;
   calendarSize: number;
   showPrices: boolean;

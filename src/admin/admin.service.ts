@@ -288,11 +288,13 @@ export class AdminService {
             'calendar.showTimes': adminDetails.showTimes,
             'calendar.calendarSize': adminDetails.calendarSize,
             'calendar.days': adminDetails.days,
+            'calendar.holidays': adminDetails.holidays,
             'calendar.daysOff': adminDetails.daysOff,
             'calendar.slides': adminDetails.slides,
             personals: adminDetails.personals,
             galleryDisplay: adminDetails.galleryDisplay,
           },
+          {new: true}
         )
         .exec();
       if (result) {
