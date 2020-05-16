@@ -26,7 +26,7 @@ const handlebarOptions = {
     defaultLayout: 'contact.hbs',
   },
   viewPath: './emails/customer',
-  extName: '.hbs',
+  extName: '.hbs', 
 };
 
 transporter.use('compile', hbs(handlebarOptions));
