@@ -294,8 +294,8 @@ export class AdminService {
             personals: adminDetails.personals,
             galleryDisplay: adminDetails.galleryDisplay,
           },
-          {new: true}
-        )
+          { new: true})
+        //.select( {'gallery' : 0 , 'owner.BG' : 0})
         .exec();
       if (result) {
         //this.s.settings = null;
