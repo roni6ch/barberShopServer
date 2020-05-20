@@ -4,9 +4,9 @@ export const constants = {
     jwtSecret: 'secretKey',
     collection: 'barber',
     mail:{
-      mail:'ddplumber4@gmail.com',
+      mail:'misparanoreplay@gmail.com',
       pass:'Batman123!',
-      mailFrom:'Roni691986@gmail.com'
+      mailFrom:'misparanoreplay@gmail.com'
     },
     cloudinary:{
       cloudName : 'dhwv0rhqz',

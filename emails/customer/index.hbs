@@ -20,10 +20,43 @@
 
 <body>
    <h1>היי {{data.name}},</h1>
-    <p>{{i18n.yourAppointmentTxt}} <b>{{i18n.titleH1}} {{i18n.titleH1span}}</b>
-        {{schedule}} <b class="red">{{data.dateStr}}</b> {{i18n.at}} <b class="red">{{data.hour}}</b>
-        {{i18n.for}}<b>{{data.haircut}} </b></p>
-  <img src="http://ronichabra.com/projects/barber/content/img/logo.png" />
+    <p>{{i18n.yourAppointmentTxt}} <b>{{i18n.titleH1}} {{i18n.titleH1span}}</b></p>
+
+
+         <div class="email-example">
+    <h3 style="font-family: arial; color:#009fc2;">אנא שמור פרטים אלו</h3>
+    <td align="center" valign="top">
+      <table border="0" style="font-family: arial; color:#565458;" cellpadding="20" cellspacing="0" width="100%" id="Body">
+        <tr>
+          <th align="right" valign="top" style="border-bottom:2px solid #edecec; border-top:2px solid #ededec;" >
+            תאריך
+          </th>
+          <td align="left" valign="top" style="border-bottom:2px solid #edecec; border-top:2px solid #ededec;">
+           <b class="red">{{data.dateStr}}</b>
+          </td>
+        </tr>
+        <tr>
+          <th align="right" valign="top" style="border-bottom:2px solid #edecec;">
+            שעה
+          </th>
+          <td style="border-bottom:2px solid #edecec;">
+           <b class="red">{{data.hour}}</b>
+          </td>
+        </tr>
+        <tr>
+          <th align="right" valign="top" style="border-bottom:2px solid #edecec;">
+            טיפול
+          </th>
+          <td style="border-bottom:2px solid #edecec;">
+           <b class="red">{{data.haircut}} </b>
+          </td>
+        </tr>
+      </table>
+  </div>
+
+  <img src="{{owner.logo}}" />
+
+  {{JSON.stringify(owner)}}
    </body>
 
 </html>

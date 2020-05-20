@@ -140,6 +140,7 @@ export class CustomersService {
           context: {
             data,
             i18n,
+            owner:resSettings.owner,
             schedule: schedule? i18n.appointmentScheduled :i18n.appointmentCanceled
         },
         template: 'index',
