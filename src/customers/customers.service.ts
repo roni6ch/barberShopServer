@@ -6,6 +6,7 @@ import { Logger } from 'winston';
 import * as moment from 'moment';
 import { SettingsService } from 'src/settings/settings.service';
 import { constants } from 'src/constants';
+const ics = require('ics');
 
 var nodemailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
@@ -73,12 +74,31 @@ export class CustomersService {
   }
 
   async addTreatment(customer, req) {
+    console.log('addTreatment');
     customer.host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
     const newTreatment = new this.cm(customer);
     try {
       let res = await newTreatment.save();
-                await this.sendUserMail(customer,req,true);
+
+      let dateStart = [
+        +moment(+customer.date).format('YYYY'),
+        +moment(+customer.date).format('M'),
+        +moment(+customer.date).format('D'),
+        +customer.hour.split(':')[0],
+        +customer.hour.split(':')[1],
+      ];
+
+      const event = {
+        start: dateStart,
+        duration: {
+          minutes: +customer.treatmentTime * 60,
+        },
+        status: 'CONFIRMED',
+        busyStatus: 'BUSY',
+      };
+
+      await this.sendUserMail(customer, req, true, event);
       if (res) return res;
       else {
         this.log('error', 'CustomersService -> save() in -> else res');
@@ -90,13 +110,32 @@ export class CustomersService {
     }
   }
   async editTreatment(customer, req) {
+    console.log('editTreatment');
     let host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
     let _id = customer._id;
     delete customer._id;
     try {
-      let res = await this.cm.findOneAndUpdate({ _id, host },customer).exec();
-                await this.sendUserMail(customer,req,true);
+      let res = await this.cm.findOneAndUpdate({ _id, host }, customer, {new: true}).exec();
+
+      let dateStart = [
+        +moment(+customer.date).format('YYYY'),
+        +moment(+customer.date).format('M'),
+        +moment(+customer.date).format('D'),
+        +customer.hour.split(':')[0],
+        +customer.hour.split(':')[1],
+      ];
+
+      const event = {
+        start: dateStart,
+        duration: {
+          minutes: +customer.treatmentTime * 60,
+        },
+        status: 'CONFIRMED',
+        busyStatus: 'BUSY',
+      };
+
+      await this.sendUserMail(customer, req, true,event);
       if (res) return res;
       else {
         this.log('error', 'CustomersService -> save() in -> else res');
@@ -107,15 +146,33 @@ export class CustomersService {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
-  
 
   async deleteTreatment(data: Customer, req) {
+    console.log('deleteTreatment');
     let host = this.s.adminName;
     try {
       let res = await this.cm.deleteOne({ _id: data['_id'], host }).exec();
       if (res.n > 0) {
         //todo - send email to customer
-        await this.sendUserMail(data,req,false);
+
+        let dateStart = [
+          +moment(+data.date).format('YYYY'),
+          +moment(+data.date).format('M'),
+          +moment(+data.date).format('D'),
+          +data.hour.split(':')[0],
+          +data.hour.split(':')[1],
+        ];
+
+      const event = {
+        start: dateStart,
+        duration: {
+          minutes: +data.treatmentTime * 60,
+        },
+        status: 'CANCELLED',
+        busyStatus: 'BUSY',
+      };
+
+        await this.sendUserMail(data, req, false,event);
         return data;
       } else {
         this.log('error', 'CustomersService -> deleteOne() in -> else res');
@@ -127,37 +184,57 @@ export class CustomersService {
     }
   }
 
-
-  async sendUserMail(data, req , schedule) {
+  async sendUserMail(data, req, schedule, event) {
     try {
       let resSettings = await this.s.getSettings();
       let i18n = resSettings.i18n[data.lang].calendar;
+      
+      event.title = i18n.titleH1 + ' ' + i18n.titleH1span,
+      event.description = resSettings.i18n[data.lang].contact.calendarInfo,
+      event.location = resSettings.owner.location,
+      event.organizer = {
+        name: i18n.titleH1 + ' ' + i18n.titleH1span,
+        email: resSettings.owner.mail,
+      };
+
       if (resSettings) {
-        const message = {
-          from: resSettings.owner.mail,
-          to: data.username,
-          subject: 'Message from: ' + resSettings.owner.website,
-          context: {
-            data,
-            i18n,
-            owner:resSettings.owner,
-            schedule: schedule? i18n.appointmentScheduled :i18n.appointmentCanceled
-        },
-        template: 'index',
-        };
+        ics.createEvent(event, (error, value) => {
+          if (error) {
+            console.log(error);
+            return;
+          }
+          const message = {
+            from: resSettings.owner.mail,
+            to: data.username,
+            subject: 'Message from: ' + resSettings.owner.website,
+            context: {
+              data,
+              i18n,
+              owner: resSettings.owner,
+              schedule: schedule
+                ? i18n.appointmentScheduled
+                : i18n.appointmentCanceled,
+            },
+            icalEvent: {
+              content: value,
+              method: 'request',
+            },
+            template: 'index',
+          };
 
-
-        let res = await transporter.sendMail(message);
-        if (res) {
-          console.log('Email succsess!');
-          return true;
-        } else {
-          this.log(
-            'error',
-            'CustomersService -> sendUserMail() in -> else res',
-          );
-          return false;
-        }
+          transporter.sendMail(message, (err, message) => {
+            if (message) {
+              console.log('Email succsess!');
+              return true;
+            } else {
+              this.log(
+                'error',
+                'CustomersService -> sendUserMail() in -> else res',
+              );
+              return false;
+            }
+          });
+        });
       } else {
         this.log(
           'error',
@@ -173,9 +250,6 @@ export class CustomersService {
     }
   }
 
-
-
-
   async userTreatments(req) {
     let host = this.s.adminName;
     let username = req.body.username;
@@ -189,7 +263,8 @@ export class CustomersService {
               .subtract(0, 'days')
               .endOf('day'),
           },
-        }).sort({'date': 'asc'})
+        })
+        .sort({ date: 'asc' })
         .exec();
       if (res) return res;
       else {
@@ -239,7 +314,11 @@ export class CustomersService {
       let res = await this.cm
         .find({
           host,
-          $or: [{ username: { $regex: param } }, { name:  { $regex: param  } }, { phone:  { $regex: param } }],
+          $or: [
+            { username: { $regex: param } },
+            { name: { $regex: param } },
+            { phone: { $regex: param } },
+          ],
           date: {
             $lte: +moment()
               .subtract(0, 'days')

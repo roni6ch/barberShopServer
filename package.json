@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^7.0.9",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.21.0",
+    "ics": "^2.19.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "mongoose": "^5.9.5",

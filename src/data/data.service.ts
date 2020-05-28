@@ -205,7 +205,7 @@ export class DataService {
     }
   }
 
-  async setHour(data, req) {
+  async setHour(data, req,edit=false) {
     let host = this.s.adminName;
     let res = await this.dm.findOne({ dayTimestamp: +data.date, host }).exec();
     let hours = [];
@@ -225,6 +225,21 @@ export class DataService {
         }
         return v;
       });
+
+      if (edit){
+        let found = false;
+        let loops = 4 * +data.oldTreatmentTime;
+        hours = hours.map((v, i) => {
+          if (v.hour === data.oldHour || found){
+            v.available = true;
+            found = true;
+            loops -=1;
+            if (loops == 0)
+              found = false;
+          }
+          return v;
+        });
+      }
       const result = await this.dm
         .updateOne({ _id: res._id }, { hours })
         .exec();
