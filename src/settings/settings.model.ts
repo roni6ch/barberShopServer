@@ -51,6 +51,8 @@ interface DaysOff {
 
  interface Owner {
   phone: string;
+  phone2: string;
+  BGColor: string;
   mail: string;
   location: string;
   website: string;

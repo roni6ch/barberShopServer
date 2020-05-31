@@ -283,6 +283,9 @@ export class AdminService {
           {
             'owner.location': adminDetails.location,
             'owner.phone': adminDetails.phone,
+            'owner.phone2': adminDetails.phone2,
+            'owner.BGColor': adminDetails.BGColor,
+            'owner.description': adminDetails.description,
             'calendar.timeSpacing': adminDetails.timeSpacing,
             'calendar.showPrices': adminDetails.showPrices,
             'calendar.showTimes': adminDetails.showTimes,
