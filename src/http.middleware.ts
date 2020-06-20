@@ -18,7 +18,6 @@ export class HttpMiddleware implements NestMiddleware {
         req.body.username = decoded.username;
           return decoded;
         }else{
-          console.log("false");
           return false;
         }
       });

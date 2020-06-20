@@ -74,7 +74,6 @@ export class CustomersService {
   }
 
   async addTreatment(customer, req) {
-    console.log('addTreatment');
     customer.host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
     const newTreatment = new this.cm(customer);
@@ -110,7 +109,6 @@ export class CustomersService {
     }
   }
   async editTreatment(customer, req) {
-    console.log('editTreatment');
     let host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
     let _id = customer._id;
@@ -148,7 +146,6 @@ export class CustomersService {
   }
 
   async deleteTreatment(data: Customer, req) {
-    console.log('deleteTreatment');
     let host = this.s.adminName;
     try {
       let res = await this.cm.deleteOne({ _id: data['_id'], host }).exec();
@@ -224,7 +221,6 @@ export class CustomersService {
 
           transporter.sendMail(message, (err, message) => {
             if (message) {
-              console.log('Email succsess!');
               return true;
             } else {
               this.log(
