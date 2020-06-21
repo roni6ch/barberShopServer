@@ -37,7 +37,11 @@ export class AdminController {
     return await this.as.checkPermissions(req);
   }
 
-
+  @Post('createNewAdmin')
+  async createNewAdmin(@Body() admin){
+    return await this.as.createNewAdmin(admin);
+  }
+  
   @Post('checkHostPermissions')
   async checkHostPermissions(@Req() req) : Promise<any>{
     return await this.as.checkHostPermissions(req); 
@@ -57,7 +61,6 @@ export class AdminController {
           cb(null, './upload')
         },
         filename: function (req, file, cb) {
-          console.log(file.originalname);
           cb(null, +new Date() +  "-" + file.originalname)
         }
       })
@@ -82,7 +85,6 @@ export class AdminController {
          cb(null, './upload')
        },
        filename: function (req, file, cb) {
-         console.log(file.originalname);
          cb(null, file.originalname)
        }
      })
@@ -103,7 +105,6 @@ export class AdminController {
          cb(null, './upload')
        },
        filename: function (req, file, cb) {
-         console.log(file.originalname);
          cb(null, file.originalname)
        }
      })

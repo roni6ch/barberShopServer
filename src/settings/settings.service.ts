@@ -21,7 +21,6 @@ export class SettingsService {
   }
   async getSettingsFromDB(adminName) {
     this.adminName = adminName;
-    console.log(new Date + " ---> " + adminName);
     try {
       let res = await this.sm.findOne({ 'owner.website' : adminName }).exec();
       if (res) {this.settings = res;
@@ -112,7 +111,6 @@ export class SettingsService {
 
   async removeUserLogo(){
     try {
-      console.log('removeUserLogo' , this.adminName );
       let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName } , {"owner.logo" : ""}).exec();
       if (res) {return true;}
       else {
@@ -160,7 +158,6 @@ export class SettingsService {
   }
   async setI18n(i18n){
     try {
-      console.log(i18n);
       let res = await this.sm.findOneAndUpdate({ 'owner.website': this.adminName }, { $set: {i18n} } ).exec();
       if (res) {return true;}
     } catch (error) {

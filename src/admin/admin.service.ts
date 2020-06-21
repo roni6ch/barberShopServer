@@ -31,7 +31,6 @@ export class AdminService {
 
   async uploadImages(file, req) {
     //Thanks to Leonied!!!
-    console.log('file', file);
     let settings = await this.s.getSettings();
     let ownerMail = settings.owner.mail;
     await cloudinary.uploader
@@ -41,8 +40,6 @@ export class AdminService {
         public_id: file.originalname.split('.')[0],
       })
       .then(async image => {
-        console.log('image uploaded to cloudinary!!! ');
-        console.log(image);
         //add it to admin db
         await this.s.setUserImages({ ...image, name: file.originalname }, req);
 
@@ -54,7 +51,6 @@ export class AdminService {
         return image;
       })
       .catch(err => {
-        console.log('** File Upload (Promise)');
         if (err) {
           console.warn(err);
         }
@@ -73,8 +69,6 @@ export class AdminService {
         public_id: 'logo',
       })
       .then(async image => {
-        console.log('logo uploaded to cloudinary!!! ');
-        console.log(image);
         //add it to admin db
         await this.s.setUserLogo({ ...image, name: file.originalname }, req);
 
@@ -86,7 +80,6 @@ export class AdminService {
         return true;
       })
       .catch(err => {
-        console.log('** File Upload (Promise)');
         if (err) {
           console.warn(err);
         }
@@ -103,8 +96,6 @@ export class AdminService {
         public_id: 'BG',
       })
       .then(async image => {
-        console.log('BG uploaded to cloudinary!!! ');
-        console.log(image);
         //add it to admin db
         await this.s.setUserBG({ ...image, name: file.originalname }, req);
 
@@ -116,7 +107,6 @@ export class AdminService {
         return true;
       })
       .catch(err => {
-        console.log('** File Upload (Promise)');
         if (err) {
           console.warn(err);
         }
@@ -136,7 +126,6 @@ export class AdminService {
         return true;
       })
       .catch(err => {
-        console.log('** File deleteImage');
         if (err) {
           console.warn(err);
         }
@@ -153,7 +142,6 @@ export class AdminService {
           return true;
       })
       .catch(err => {
-        console.log('** File deleteImage');
         if (err) {
           console.warn(err);
         }
@@ -169,7 +157,6 @@ export class AdminService {
           return true;
       })
       .catch(err => {
-        console.log('** File deleteImage');
         if (err) {
           console.warn(err);
         }
@@ -339,6 +326,24 @@ export class AdminService {
       );
     }
   }
+  async createNewAdmin(admin) {
+    try {
+      const newAdminUser = new this.sm(admin);
+        let res = await newAdminUser.save();
+      if (res) return true;
+      else {
+        this.log('error', 'AdminService -> createNewAdmin() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `AdminService -> createNewAdmin() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  
 
   async updateAdmin(adminDetails, req) {
     let host = this.s.adminName;
@@ -355,11 +360,9 @@ export class AdminService {
             'calendar.timeSpacing': adminDetails.timeSpacing,
             'calendar.showPrices': adminDetails.showPrices,
             'calendar.showTimes': adminDetails.showTimes,
-            'calendar.calendarSize': adminDetails.calendarSize,
             'calendar.days': adminDetails.days,
             'calendar.holidays': adminDetails.holidays,
             'calendar.daysOff': adminDetails.daysOff,
-            'calendar.slides': adminDetails.slides,
             personals: adminDetails.personals,
             galleryDisplay: adminDetails.galleryDisplay,
           },

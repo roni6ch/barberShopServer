@@ -50,7 +50,7 @@ export class DataService {
     if (res) {
       for (
         let i = 0;
-        i < res.calendar.slides * this.s.settings.calendar.calendarSize;
+        i < 90; //check
         i++
       ) {
         let date = moment(weekStart).add(i, 'days');
@@ -95,7 +95,6 @@ export class DataService {
         let hours = [];
         let found = false;
         let loops = 4 * +data.treatmentTime; 
-        console.log('loops',loops);
         hours = res.hours.map((v, i) => {
           if (v.hour === data.hour || found){
             v.available = true;
@@ -186,7 +185,6 @@ export class DataService {
         };
           let res = await transporter.sendMail(message);
         if (res) {
-          console.log('Email succsess!');
           return true;
         } else {
           this.log('error', 'DataService -> sendContact() in -> else res');
@@ -214,7 +212,6 @@ export class DataService {
     if (res && res.hours) {
       let found = false;
       let loops = 4 * +data.treatmentTime;
-      console.log('loops',loops);
       hours = res.hours.map((v, i) => {
         if (v.hour === data.hour || found){
           v.available = false;
@@ -247,7 +244,6 @@ export class DataService {
         this.log('error', 'DataService -> setHour() in -> result = 0'); 
         return false;
       } else {
-        console.log('updated!!!');
         return true;
       }
     } else {
@@ -258,7 +254,6 @@ export class DataService {
 
   async addCalendarDay(data, req) {
     let host = this.s.adminName;
-    console.log('new day -> create one');
     let hours = [];
     let resSettings = await this.s.getSettings();
     let hoursSettings =
