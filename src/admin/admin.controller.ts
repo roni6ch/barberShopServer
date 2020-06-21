@@ -22,6 +22,16 @@ export class AdminController {
   async getMyTreatments(@Req() req){
     return await this.as.getMyTreatments(req);
   }
+  @Get('getAllCustomers')
+  async getAllCustomers(@Req() req){
+    return await this.as.getAllCustomers(req);
+  }
+  @Post('editCardInfo')
+  async editCardInfo(@Body() card){
+    return await this.as.editCardInfo(card);
+  }
+  
+  
   @Post('checkPermissions')
   async checkPermissions(@Req() req){
     return await this.as.checkPermissions(req);

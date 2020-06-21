@@ -203,6 +203,72 @@ export class AdminService {
     }
   }
 
+  async editCardInfo(card){
+
+    const filter = {  _id: card._id };
+    const update = { cardInfo: card.cardInfo };
+    try {
+      let res = await this.cm.findOneAndUpdate(filter, update);
+      if (res) return true;
+      else {
+        this.log('error', 'AdminService -> editCardInfo() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `AdminService -> editCardInfo() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+
+  async getAllCustomers(req) {
+    let host = this.s.adminName;
+    try {
+
+      let res = await this.cm.aggregate([
+        {
+          $group: {
+            _id: "$username",
+            "doc": {
+              "$first": "$$ROOT"
+            },
+            
+          },
+          
+        },
+        {
+          "$replaceRoot": {
+            "newRoot": "$doc"
+          }
+        },
+        {
+          $project: {
+            phone: 1,
+            gender: 1,
+            cardInfo: 1,
+            username: 1,
+            image: 1,
+            name: 1
+          }
+        }
+      ])
+      if (res) return res;
+      else {
+        this.log('error', 'AdminService -> getAllCustomers() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `AdminService -> getAllCustomers() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  
+
   async checkPermissions(req) {
     try {
       let res = await this.s.getSettings();

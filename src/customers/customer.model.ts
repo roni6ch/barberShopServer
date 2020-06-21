@@ -13,6 +13,8 @@ export const CustomerSchema = new mongoose.Schema({
     username: { type: String, required: true },
     treatmentTime : { type: String, required: true },
     lang: { type: String, required: true },
+    image: { type: String, required: true },
+    cardInfo: { type: String},
     other: { type: String }
 }, { collection: 'customers' })
 
@@ -30,4 +32,6 @@ export interface Customer extends mongoose.Document {
   treatmentTime: string;
   lang: string;
   other: string;
+  cardInfo: string;
+  image:string; 
 }

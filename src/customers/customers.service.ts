@@ -77,6 +77,7 @@ export class CustomersService {
     console.log('addTreatment');
     customer.host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
+    console.log(customer);
     const newTreatment = new this.cm(customer);
     try {
       let res = await newTreatment.save();
@@ -109,7 +110,8 @@ export class CustomersService {
       throw new HttpException('ExceptionFailed', HttpStatus.EXPECTATION_FAILED);
     }
   }
-  async editTreatment(customer, req) {
+  async editTreatment(data, req) {
+    let customer = data.customer;
     console.log('editTreatment');
     let host = this.s.adminName;
     customer.username = req.body.username.toLowerCase();
@@ -134,8 +136,8 @@ export class CustomersService {
         status: 'CONFIRMED',
         busyStatus: 'BUSY',
       };
-
-      await this.sendUserMail(customer, req, true,event);
+      if (data.sendMail)
+        await this.sendUserMail(customer, req, true,event);
       if (res) return res;
       else {
         this.log('error', 'CustomersService -> save() in -> else res');
@@ -186,6 +188,8 @@ export class CustomersService {
 
   async sendUserMail(data, req, schedule, event) {
     try {
+
+      console.log('sendUserMail');
       let resSettings = await this.s.getSettings();
       let i18n = resSettings.i18n[data.lang].calendar;
       

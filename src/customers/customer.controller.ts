@@ -12,8 +12,8 @@ export class CustomerController {
       return await this.cs.addTreatment(customer, req);
   }
   @Post('editTreatment')
-  async editTreatment(@Body() customer: Customer, @Req() req): Promise<boolean> {
-    if (await this.ds.setHour(customer, req,true))
+  async editTreatment(@Body() customer, @Req() req): Promise<boolean> {
+    if (await this.ds.setHour(customer.customer, req,true))
       return await this.cs.editTreatment(customer, req);
   }
   @Post('deleteTreatment')
