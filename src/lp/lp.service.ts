@@ -13,6 +13,7 @@ export class LpService {
   async getI18n(){
     try {
       let res = await this.lpm.find().exec();
+      console.log(res);
       if (res) {return res[0].i18n;}
     } catch (error) {
       return new HttpException(

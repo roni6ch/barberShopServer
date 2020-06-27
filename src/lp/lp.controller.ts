@@ -9,6 +9,7 @@ export class LpController {
   }
   @Get('getI18n')
   async getI18n() : Promise<any>{
+    console.log('getI18n');
     return await this.lpService.getI18n(); 
   }
 }
