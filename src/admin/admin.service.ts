@@ -190,6 +190,25 @@ export class AdminService {
     }
   }
 
+  async getStatistics(req) {
+    let host = this.s.adminName;
+    try {
+      let res = await this.am.find({host});
+      if (res) return res;
+      else {
+        this.log('error', 'AdminService -> getStatistics() in -> else res');
+        return false;
+      }
+    } catch (error) {
+      this.log('error', `AdminService -> getStatistics() => ${error}`);
+      return new HttpException(
+        'ExceptionFailed',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+  }
+  
+
   async editCardInfo(card){
 
     const filter = {  _id: card._id };

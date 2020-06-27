@@ -22,6 +22,11 @@ export class AdminController {
   async getMyTreatments(@Req() req){
     return await this.as.getMyTreatments(req);
   }
+  @Get('getStatistics')
+  async getStatistics(@Req() req){
+    return await this.as.getStatistics(req);
+  }
+  
   @Get('getAllCustomers')
   async getAllCustomers(@Req() req){
     return await this.as.getAllCustomers(req);
