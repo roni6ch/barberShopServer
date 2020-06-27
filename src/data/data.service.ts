@@ -8,7 +8,11 @@ import { Customer } from 'src/customers/customer.model';
 var nodemailer = require('nodemailer');
 import { Logger } from 'winston';
 import { Inject, HttpException, HttpStatus, Req } from '@nestjs/common';
+const fetch = require('node-fetch');
 const hbs = require('nodemailer-express-handlebars');
+const fs = require('fs');
+const path = require('path');
+
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -38,7 +42,28 @@ export class DataService {
     @InjectModel('Data') private readonly dm: Model<Data>,
     @Inject('winston') private readonly logger: Logger,
     private s: SettingsService,
-  ) {}
+  ) {
+    //86400000 one day
+    //setInterval(()=> this.backup(),+constants.backUpTime);
+  }
+  
+  async backup(){
+    //backup every day mongoDB
+    const now = new Date();
+    const data = await this.dm.find({dayTimestamp: { $gte: +moment().subtract(1, 'days').endOf('day')}}).exec();
+    fs.writeFile(`files/data_${now.formattedDate()}.txt`, JSON.stringify(data), (err) => {
+      if (err) console.log("Bad File");
+    }
+  );
+    
+    const customers = await this.cm.find({date: { $gte: +moment().subtract(1, 'days').endOf('day')}}).exec();
+    fs.writeFile(`files/customers_${now.formattedDate()}.txt`, JSON.stringify(customers), (err) => {
+      if (err) console.log("Bad File");
+    }
+  );
+  }
+  
+
   async getData(req) {
     let host = this.s.adminName;
     let calendar = [];
@@ -86,6 +111,17 @@ export class DataService {
       this.log('error', 'DataService -> getData() in -> no owner');
       return false;
     }
+  }
+  async getHolidays(req){
+    
+    return await fetch(`https://www.hebcal.com/hebcal/?v=1&cfg=json&maj=on&min=on&mod=on&nx=off&year=now&month=x&ss=off&mf=off&c=off&geo=geoname&geonameid=3448439&m=50&s=off`)
+  .then((response) => {
+    return response.json();
+  })
+  .then((myJson) => {
+   return myJson;
+  });
+
   }
   async deleteHour(data: Customer, req) {
     let host =this.s.adminName;

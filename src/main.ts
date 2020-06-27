@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { static as expose } from 'express';
 
-
 async function bootstrap() {
   const port = 3000;
   const app = await NestFactory.create(AppModule,{cors:true});

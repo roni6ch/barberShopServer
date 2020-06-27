@@ -1,8 +1,19 @@
-import { Injectable, HttpStatus, HttpException, Logger, Inject } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException, Logger, Inject, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Settings } from './settings.model';
+import { constants } from 'src/constants';
 import { Model } from 'mongoose';
 import { Auth } from 'src/auth/auth.model';
+const fs = require('fs');
+
+var cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: constants.cloudinary.cloudName,
+  api_key: constants.cloudinary.apiKey,
+  api_secret: constants.cloudinary.apiSecret,
+});
+
+
 
 @Injectable()
 export class SettingsService {
@@ -12,7 +23,47 @@ export class SettingsService {
     @InjectModel('Settings') private readonly sm: Model<Settings>,
     @Inject('winston') private readonly logger: Logger,
   ) {
+    //86400000 one day
+    //setInterval(()=> this.backup(),+constants.backUpTime);
   }
+  async backup(){
+    //backup every day mongoDB
+    let now = new Date().formattedDate();
+    let settings = await this.sm.find().exec();
+     await fs.writeFile(`files/settings_${now}.txt`, JSON.stringify(settings), (err) => {
+      if (err) return;
+    }
+  );
+    await fs.readFile(`files/settings_${now}.txt`, async (err, file) => {
+        if (err) {
+            throw err;
+        }
+        this.uploadFile(file);
+    });
+  }
+
+  
+ async uploadFile(@UploadedFile() file){
+   return await cloudinary.uploader.upload(file.path, {
+    folder: 'backups',
+    resource_type: 'file',
+    public_id: file.originalname.split('.')[0],
+  }).then(async file => {
+    //remove local image from server
+    fs.unlink(file.path, err => {
+      if (err) throw err;
+    });
+    return true;
+  })
+  .catch(err => {
+    if (err) {
+      console.warn(err);
+    }
+    return err;
+  });
+ }
+
+
 
   getSettings(){
     if (this.settings !== null){
@@ -174,3 +225,4 @@ export class SettingsService {
     this.logger.log(type, data);
   }
 }
+

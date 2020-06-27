@@ -56,3 +56,32 @@ export class AppModule {
       .forRoutes(AdminController,DataController,CustomerController);
   }
 }
+
+
+
+declare global { // to access the global type String
+  interface Date {
+    formattedDate(): string;
+  }
+}
+
+// then the actual code
+Date.prototype.formattedDate = function () {
+  const day = this.getDate();
+  const month = this.getMonth() + 1;
+  const year = this.getFullYear();
+  const hour = this.getHours();
+  const minutes = this.getMinutes();
+  const seconds = this.getSeconds();
+  return [
+    (day < 9 ? "0" : "") + day,
+    "-",
+    (month < 9 ? "0" : "") + month,
+    "-",
+    year,
+    "_",
+    (hour < 9 ? "0" : "") + hour,
+    "-",
+    (minutes < 9 ? "0" : "") + minutes,
+  ].join("");
+};

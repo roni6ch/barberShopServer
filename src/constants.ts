@@ -3,6 +3,7 @@ export const constants = {
     mdbPass: 'cicUc6TJHK7A1Wgy',
     jwtSecret: 'secretKey',
     collection: 'barber',
+    backUpTime:'10000',
     mail:{
       mail:'misparanoreplay@gmail.com',
       pass:'Batman123!',

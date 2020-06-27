@@ -8,12 +8,16 @@ export class DataController {
   constructor(
     private ds: DataService,
     private cs: CustomersService
-  ) {
-  }
+  ) {}
 
   @Get()
   async getData(@Req() req) {
     return await this.ds.getData(req);
+  }
+  
+  @Get('getHolidays')
+  async getHolidays(@Req() req) {
+    return await this.ds.getHolidays(req);
   }
   @Post('sendContact')
   async sendContact(@Body() contact,@Req() req){
