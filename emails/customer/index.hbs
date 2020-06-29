@@ -24,7 +24,13 @@
 
 
          <div class="email-example">
-    <h3 style="font-family: arial; color:#009fc2;">אנא שמור פרטים אלו</h3>
+  <h3 style="font-family: arial; color:#009fc2;">
+    {{#if schedule}}
+          אנא שמור פרטים אלו
+    {{else}}
+       שים לב, כי התור בוטל
+    {{/if}}
+</h3>
     <td align="center" valign="top">
       <table border="0" style="font-family: arial; color:#565458;" cellpadding="20" cellspacing="0" width="100%" id="Body">
         <tr>
@@ -54,7 +60,6 @@
       </table>
   </div>
 
-  <img src="{{owner.logo}}" />
+  <img src="{{owner.image}}" />
    </body>
-
 </html>

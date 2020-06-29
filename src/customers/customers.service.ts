@@ -184,7 +184,7 @@ export class CustomersService {
     }
   }
 
-  async sendUserMail(data, req, schedule, event) {
+  async sendUserMail(data, req, schedule = true, event) {
     try {
 
       console.log('sendUserMail');
@@ -213,9 +213,7 @@ export class CustomersService {
               data,
               i18n,
               owner: resSettings.owner,
-              schedule: schedule
-                ? i18n.appointmentScheduled
-                : i18n.appointmentCanceled,
+              schedule: schedule,
             },
             icalEvent: {
               content: value,
