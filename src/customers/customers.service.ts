@@ -185,6 +185,7 @@ export class CustomersService {
   }
 
   async sendUserMail(data, req, schedule = true, event) {
+    return;
     try {
 
       console.log('sendUserMail');
